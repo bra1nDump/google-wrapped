@@ -9,7 +9,7 @@ import sparknlp
 # sparknlp.start(gpu=True) will start the session with GPU support
 # sparknlp.start(m1=True) will start the session with macOS M1 support
 # sparknlp.start(memory="16G") to change the default driver memory in SparkSession
-spark = sparknlp.start()
+spark = sparknlp.start(memory="2G")
 
 # Download a pre-trained pipeline
 pipeline = PretrainedPipeline('explain_document_dl', lang='en')
@@ -24,10 +24,10 @@ It's held at the Louvre in Paris.
 result = pipeline.annotate(text)
 
 # What's in the pipeline
-list(result.keys())
-Output: ['entities', 'stem', 'checked', 'lemma', 'document',
+print(list(result['entities']))
+# Output: ['entities', 'stem', 'checked', 'lemma', 'document',
 'pos', 'token', 'ner', 'embeddings', 'sentence']
 
 # Check the results
-result['entities']
-Output: ['Mona Lisa', 'Leonardo', 'Louvre', 'Paris']
+print(result['entities'])
+# Output: ['Mona Lisa', 'Leonardo', 'Louvre', 'Paris']
