@@ -24,10 +24,10 @@ It's held at the Louvre in Paris.
 result = pipeline.annotate(text)
 
 # What's in the pipeline
-print(list(result['entities']))
-# Output: ['entities', 'stem', 'checked', 'lemma', 'document',
-'pos', 'token', 'ner', 'embeddings', 'sentence']
+print(list(result.keys()))
+# Output: ['entities', 'stem', 'checked', 'lemma', 'document','pos', 'token', 'ner', 'embeddings', 'sentence']
 
 # Check the results
-print(result['entities'])
+print(list(result['entities']))
+print(result)
 # Output: ['Mona Lisa', 'Leonardo', 'Louvre', 'Paris']
