@@ -9,7 +9,9 @@ import sparknlp
 # sparknlp.start(gpu=True) will start the session with GPU support
 # sparknlp.start(m1=True) will start the session with macOS M1 support
 # sparknlp.start(memory="16G") to change the default driver memory in SparkSession
-spark = sparknlp.start()
+spark = sparknlp.start(output_level=0, log_folder='logs')
+print("Spark NLP version: {}".format(sparknlp.version()))
+print("Apache Spark version: {}".format(spark.version))
 
 # Download a pre-trained pipeline
 pipeline = PretrainedPipeline('explain_document_dl', lang='en')
