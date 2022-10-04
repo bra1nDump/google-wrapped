@@ -10,9 +10,5 @@
     "language": "python",
     "metadata": {
         "debugger": true
-    },
-    "env": {
-        "PATH": "/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/:${PATH}",
-        "JAVA_HOME": "/usr/lib/jvm/java-8-openjdk-amd64"
     }
 }
