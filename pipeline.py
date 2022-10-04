@@ -1,6 +1,5 @@
 from pyspark.sql import SparkSession
 from datetime import datetime, date
-import pandas as pd
 
 from pyspark.sql import Row
 import pyspark.sql.functions as F
