@@ -4,53 +4,99 @@ from datetime import datetime, date
 from pyspark.sql import Row
 import pyspark.sql.functions as F
 import sparknlp 
-
-spark = sparknlp.start()
-
-history = spark.read.csv('sample_history.csv', sep='|', header=True).toDF("kind", "text", "url")
-
-print(history)
-print(history.schema)
-print(history.columns)
-
-history.show(3)
-
 from pyspark.ml import Pipeline
 from sparknlp.annotator import *
 from sparknlp.common import *
 from sparknlp.pretrained import *
 from sparknlp.base import *
 
-document_assembler = DocumentAssembler()\
- .setInputCol("text")\
- .setOutputCol("document")
-sentenceDetector = SentenceDetector()\
- .setInputCols(["document"])\
- .setOutputCol("sentences")
-tokenizer = Tokenizer() \
- .setInputCols(["sentences"]) \
- .setOutputCol("token")
-normalizer = Normalizer()\
- .setInputCols(["token"])\
- .setOutputCol("normal")
-word_embeddings=WordEmbeddingsModel.pretrained()\
- .setInputCols(["document","normal"])\
- .setOutputCol("embeddings")
-nlpPipeline = Pipeline(stages=[
- document_assembler, 
- sentenceDetector,
- tokenizer,
- normalizer,
- word_embeddings,
- ])
-pipelineModel = nlpPipeline.fit(history)
+spark = sparknlp.start(memory="2G")
 
-# results=pipelineModel.transform(history)
-# results.show(200)
+history = spark.read.csv('sample_history.csv', sep='|', header=True).toDF("kind", "text", "url")
+
+document = DocumentAssembler()\
+    .setInputCol("text")\
+    .setOutputCol("document")
+    
+# we can also use sentence detector here 
+# if we want to train on and get predictions for each sentence
+# downloading pretrained embeddings
+use = UniversalSentenceEncoder.pretrained()\
+ .setInputCols(["document"])\
+ .setOutputCol("sentence_embeddings")
+# the classes/labels/categories are in category column
+classsifierdl = ClassifierDLApproach()\
+  .setInputCols(["sentence_embeddings"])\
+  .setOutputCol("class")\
+  .setLabelColumn("category")\
+  .setMaxEpochs(5)\
+  .setEnableOutputLogs(True)
+use_clf_pipeline = Pipeline(
+    stages = [
+        document,
+        use,
+        classsifierdl
+    ])
+    
+training_data = spark.createDataFrame([
+    ['How to make a python3 spark dataframe', 'work'],
+    ['where to go out and eat with friends?', 'fun'],
+    ]).toDF("text", "category")
+
+use_pipelineModel = use_clf_pipeline.fit(training_data)
+
+
+light_model = LightPipeline(use_pipelineModel)
+text="Euro 2020 and the Copa America have both been moved to the summer of 2021 due to the coronavirus outbreak."
+print(light_model.annotate(text)['category'])
 
 # Search summary
-explainPipeline = PretrainedPipeline("explain_document_dl", lang="en")
+# explainPipeline = PretrainedPipeline("explain_document_dl", lang="en")
+# explainResults = explainPipeline.transform(dataset)
 
-explainResults = explainPipeline.transform(history).select("entities.result")
+#search_history_embeddings.show(30)
+#search_history_embeddings.select("entities.result").show(30)
 
-explainResults.show(30)
+print(explainResults.count())
+
+
+training_embeddings = get_embeddings(training_data)
+
+#def get_embeddings(dataset):
+
+    # document_assembler = (
+    #     DocumentAssembler()
+    #         .setInputCol("text")
+    #         .setOutputCol("document")
+    # )
+    # sentenceDetector = (
+    #     SentenceDetector()
+    #         .setInputCols(["document"])
+    #         .setOutputCol("sentences")
+    # )
+    # tokenizer = (
+    #     Tokenizer()
+    #         .setInputCols(["sentences"])
+    #         .setOutputCol("token")
+    # )
+    # normalizer = (
+    #     Normalizer()
+    #         .setInputCols(["token"])
+    #         .setOutputCol("normal")
+    # )
+    # word_embeddings= (
+    #     WordEmbeddingsModel.pretrained()
+    #         .setInputCols(["document","normal"])
+    #         .setOutputCol("embeddings")
+    # )
+    # nlpPipeline = Pipeline(stages=[
+    # document_assembler, 
+    # sentenceDetector,
+    # tokenizer,
+    # normalizer,
+    # word_embeddings,
+    # ])
+    # pipelineModel = nlpPipeline.fit(dataset)
+
+    # results=pipelineModel.transform(dataset)
+    # results.show(200)
