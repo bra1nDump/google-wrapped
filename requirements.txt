@@ -2,3 +2,6 @@ spark-nlp==4.2.0
 pyspark==3.2.1
 numpy
 findspark==2.0.1
+
+# Development
+ipykernel==6.5.0
