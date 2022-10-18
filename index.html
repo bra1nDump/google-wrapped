@@ -1,0 +1,91 @@
+<html>
+  <head></head>
+  <body
+    style="
+      background-image: linear-gradient(123deg, #ffffff 0%, #00b2ff 100%),
+        linear-gradient(236deg, #baff99 0%, #005e64 100%),
+        linear-gradient(180deg, #ffffff 0%, #002a5a 100%),
+        linear-gradient(
+          225deg,
+          #0094ff 20%,
+          #bff4ed 45%,
+          #280f34 45%,
+          #280f34 70%,
+          #ff004e 70%,
+          #e41655 85%,
+          #b30753 85%,
+          #b30753 100%
+        ),
+        linear-gradient(
+          135deg,
+          #0e0220 15%,
+          #0e0220 35%,
+          #e40475 35%,
+          #e40475 60%,
+          #48e0e4 60%,
+          #48e0e4 68%,
+          #d7fbf6 68%,
+          #d7fbf6 100%
+        );
+      background-blend-mode: overlay, overlay, overlay, darken, normal;
+      color: #fff;
+      font-family: system-ui, Helvetica, Arial, sans-serif;
+    "
+  >
+    <form
+      method="POST"
+      action="/upload/zip"
+      enctype="multipart/form-data"
+      style="
+        padding: 2em;
+        display: grid;
+        grid-gap: 1em;
+        justify-content: center;
+        text-align: center;
+      "
+    >
+      <h1
+        name="file"
+        type="file"
+        style="margin: 0; padding: 0; text-shadow: 1px 1px 3px rgb(0 0 0)"
+      >
+        My form
+      </h1>
+      <pre style="text-align: left; overflow-wrap: break-word">
+        Pro tip 🐻: can be done entirely from mobile!
+
+        - Go to <a href="https://takeout.google.com/settings/takeout/downloads" target="_blank">Google Takeout 🥡</a>
+        - Click "Deselect all"
+        - Find and set a checkmark under "My Activity" 🏄
+        - Click "Next step" on the bottom
+        - Keep the fields in the next step as is and click "Create export"
+        - Wait for the email from google (2 minutes) 📥
+        - Click the link from the email, it will open in google drive 🔗
+        - Download your Takeout folder 📁
+        - Open GoogleWrapped.com again and upload .zip
+        - Wait for a couple of seconds and profit. - now you can show your friends how much of a clown you really are 🤡
+      </pre>
+      <div style="box-shadow: rgb(0 0 0 / 24%) 2px 3px 8px">
+        <div style="padding: 12px; background-color: #eee; border-radius: 12px">
+          <input
+            name="file"
+            type="file"
+            style="
+              padding: 160px;
+              background-color: #eee;
+              border: 2px solid #ccc;
+              border-radius: 8px;
+              border-style: dashed;
+              color: #000;
+              font-weight: 700;
+            "
+          />
+        </div>
+      </div>
+      <div>
+        "File"
+        <input type="submit" value="Upload" />
+      </div>
+    </form>
+  </body>
+</html>

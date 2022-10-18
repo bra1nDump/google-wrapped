@@ -1,7 +1,17 @@
+# Machine learning
 spark-nlp==4.2.0 
 pyspark==3.2.1
 numpy
 findspark==2.0.1
+
+# Web 
+flask==2.2.2
+
+## Server sitting in front of flask
+gunicorn==20.1.0
+
+## Parsing takeout
+xmltodict==0.13.0
 
 # Development
 ipykernel==6.5.0
