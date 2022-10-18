@@ -11,3 +11,10 @@ RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/
 # I think it already adds java 11 to the path
 RUN apt-get update \
     && apt-get install -y openjdk-11-jdk
+
+# Install additional binaries
+RUN mkdir "$HOME/.local/bin"
+# Assumes we are in the root of the repo
+RUN cd bin \
+    && tar -x "--directory=$HOME/.local/bin" --file=xidel-0.9.8.linux64.tar.gz xidel \
+    && chmod +x "$HOME/.local/bin/xidel"

@@ -104,15 +104,17 @@ def upload_zip():
 
     features = smart_features(entries)
 
+    return "Ok"
+
 
 def parse_entry(fragment):
     summary_text = fragment["div"]["#text"]
     output = {}
     if summary_text.startswith("Searched"):
-        output.kind = "Searched"
+        output["kind"] = "Searched"
     elif summary_text.startswith("Visited"):
-        output.kind = "Visited"
-        output.url = fragment["div"]["a"]["@href"]
+        output["kind"] = "Visited"
+        output["url"] = fragment["div"]["a"]["@href"]
     else:
         return {}
     if not "a" in fragment["div"]:
@@ -121,5 +123,5 @@ def parse_entry(fragment):
         return {}
     if not "#text" in fragment["div"]["a"]:
         return {}
-    output.query = fragment["div"]["a"]["#text"]
+    output["query"] = fragment["div"]["a"]["#text"]
     return output
