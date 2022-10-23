@@ -1,3 +1,3 @@
 from pyspark.sql import Row
 
-EntryRow = Row("kind", "query", "url")
+EntryRow = Row("kind", "text", "url")

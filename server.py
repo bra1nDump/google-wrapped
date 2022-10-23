@@ -10,9 +10,11 @@ from flask import Flask, request
 import xmltodict
 
 from custom_types import EntryRow
-from spark_pipeline import smart_features
+from helpers import history_features, spark_init
 
-# Run with gunicorn --reload 'server:app'
+spark = spark_init()
+
+# Run with gunicorn --reload --timeout 0 'server:app'
 
 app = Flask(__name__, static_url_path='', static_folder='')
 
@@ -102,9 +104,20 @@ def upload_zip():
         )
         entries.append(entry_row)
 
-    features = smart_features(entries)
+    features = history_features(spark, spark.createDataFrame(entries))
 
-    return "Ok"
+    list_items = [f"<li> {row.text} </li>" for row in features]
+    return f"""
+    <html>
+    <head></head>
+    <body>
+    <h1>Top Non work</h1>
+    <ul>
+    {''.join(list_items)}
+    </ul>
+    </body>
+    </html>
+    """
 
 
 def parse_entry(fragment):
