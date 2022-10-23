@@ -106,16 +106,29 @@ def upload_zip():
 
     features = history_features(spark, spark.createDataFrame(entries))
 
-    list_items = [f"<li> {row.text} </li>" for row in features]
+    # \ character is not allowed in f-strings
+    nl = '\n'
+
+    def render_feature(name, searches):
+        list_items = [f"<li>{search_row.text}</li>" for search_row in searches]
+        return f"""
+            <h1>{name}</h1>
+            <ul>
+                {nl.join(list_items)}
+            </ul>
+        """
+
+    rendered_features = "\n".join([
+        render_feature(name, searches)
+        for name, searches in features.items()
+    ])
+
     return f"""
     <html>
-    <head></head>
-    <body>
-    <h1>Top Non work</h1>
-    <ul>
-    {''.join(list_items)}
-    </ul>
-    </body>
+        <head></head>
+        <body>
+            {rendered_features}
+        </body>
     </html>
     """
 
