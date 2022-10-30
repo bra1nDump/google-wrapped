@@ -12,11 +12,16 @@
     "rootDir": "./",
     "outDir": "tmp/ts",
     "allowSyntheticDefaultImports": true,
-    "lib": ["esnext", "dom", "dom.iterable"],
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable"
+    ],
     "types": [],
-    "noEmit": true
+    "noEmit": true,
+    "resolveJsonModule": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
   ]
 }
