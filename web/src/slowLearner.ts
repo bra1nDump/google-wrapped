@@ -29,28 +29,19 @@ const labelsToInclude = [
   "threat",
   "sexual_explicit",
   "obscene",
-] as const;
+];
 
-type Label =
-  | "toxicity"
-  | "severe_toxicity"
-  | "identity_attack"
-  | "insult"
-  | "threat"
-  | "sexual_explicit"
-  | "obscene";
-
-export async function ignoreFeedback() {
+export async function ignoreFeedback(): Promise<string[]> {
   // The minimum prediction confidence.
   const threshold = 0.9;
 
   var startTime = performance.now();
-  const model = await toxicity.load(threshold, [...labelsToInclude]);
+  const model = await toxicity.load(threshold, labelsToInclude);
   var endTime = performance.now();
   console.log(`Model loading took: ${(endTime - startTime) / 1000} s`);
 
   startTime = performance.now();
-  const searches = getSearches();
+  const searches = getSearches().slice(0, 300);
   var endTime = performance.now();
   console.log(`Parsing searches took: ${(endTime - startTime) / 1000} s`);
 
@@ -83,7 +74,7 @@ export async function ignoreFeedback() {
     return labeled;
   }
 
-  const batches = _.chunk(searches, 100);
+  const batches = _.chunk(searches, 5);
   let labeled: any[] = [];
   for (const batch of batches) {
     console.log(`New batch starting`);
@@ -112,10 +103,11 @@ export async function ignoreFeedback() {
 
   // Unfortunately there's is a lot of overlap in for my personal search history
   // Only sexual explicit extracted top ones are any good
-  for (const label of labelsToInclude) {
-    top(label);
-  }
+  // for (const label of labelsToInclude) {
+  //   top(label);
+  // }
 
+  var endTime = performance.now();
   console.log(`Post processing took: ${(endTime - startTime) / 1000} s`);
 
   return top("sexual_explicit");
