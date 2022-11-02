@@ -5,9 +5,13 @@ from sparknlp import DocumentAssembler, SparkSession
 from sparknlp.annotator import ClassifierDLApproach, UniversalSentenceEncoder
 
 from pyspark.sql import DataFrame, Window, Column
-from pyspark.sql.functions import asc, row_number, col, desc
+from pyspark.sql.functions import asc, row_number, col, desc, sqrt, expr
+import pyspark.sql.functions as f
 
-from pyspark.ml import Pipeline, Transformer
+from pyspark.ml import Pipeline, PipelineModel, Transformer
+
+from pyspark.ml.clustering import KMeans
+from pyspark.ml.evaluation import ClusteringEvaluator
 
 
 findspark.init()
@@ -47,11 +51,14 @@ def prepare_data(history: DataFrame):
     return search_history
 
 
-def classifier_pipeline(training_data: DataFrame):
+def bert_embeddings_pipeline() -> PipelineModel:
     """Expects 'text' column in dataframe,
-    adds 'predicted_category' column.
-    It will be further parsed by helpers.
+    adds 'sentence_embeddings' column of type vector to output
     """
+
+    # TODO: Try reading saved model first
+    # PipelineModel.load()
+
     document = (
         DocumentAssembler()
         .setInputCol("text")
@@ -66,6 +73,23 @@ def classifier_pipeline(training_data: DataFrame):
         .setInputCols(["document"])
         .setOutputCol("sentence_embeddings")
     )
+
+    pipeline = PipelineModel(
+        stages=[
+            document,
+            sentence_encoder
+        ]
+    )
+
+    return pipeline
+
+
+# TODO: add label parameter so we can use serialized pipeline instead of retraining
+def classifier_pipeline(training_data: DataFrame) -> PipelineModel:
+    """Expects 'text' column in dataframe,
+    adds 'predicted_category' column.
+    It will be further parsed by helpers.
+    """
     # the classes/labels/categories are in label column
     classsifierdl = (
         ClassifierDLApproach()
@@ -78,8 +102,6 @@ def classifier_pipeline(training_data: DataFrame):
 
     pipeline = Pipeline(
         stages=[
-            document,
-            sentence_encoder,
             classsifierdl
         ]
     )
@@ -133,21 +155,6 @@ def dedup_top_n(df: DataFrame,
         col("rn") <= n).drop("rn")
 
 
-def work_non_work_samples(spark: SparkSession):
-    return spark.createDataFrame([
-        # work
-        ['how to make a python3 spark dataframe?', 'work'],
-        ['swift objective-c inter operation', 'work'],
-        ['bootstrapping deployment pipeline', 'work'],
-        ['aws route 53 domain configuration', 'work'],
-        # non_work
-        ['where to go out and eat with friends?', 'non_work'],
-        ['Best things to bring to a beach party', 'non_work'],
-        ['Were to buy a sex doll?', 'non_work'],
-        ['Is not yawning in response a sign of a maniac', 'non_work'],
-    ]).toDF("text", "label")
-
-
 def sexual_samples(spark: SparkSession):
     return spark.createDataFrame([
         # work
@@ -177,6 +184,10 @@ def sexual_samples(spark: SparkSession):
         ['How to get a bigger penis manually', 'sexual'],
         ['How to measure a penis', 'sexual'],
         ['How to insert a male organ into a female organ', 'sexual'],
+
+        # Simple words for better bag of words model
+        ['vagina', 'sexual'],
+        ['penis', 'sexual'],
     ]).toDF("text", "label")
 
 
@@ -208,6 +219,13 @@ def political_samples(spark: SparkSession):
         ['How do we reach equal opportunity employment for minorities', 'political'],
         ['Find relative in a immigration detention center', 'political'],
         ['What is the government doing with homelessness, Los angeles budgets', 'political'],
+
+        # Simple words for better bag of words model
+        ['Elections', 'political'],
+        ['Human rights', 'political'],
+        ['amendment', 'political'],
+        ['law', 'political'],
+        ['homelessness', 'political'],
     ]).toDF("text", "label")
 
 
@@ -239,6 +257,12 @@ def illness_samples(spark: SparkSession):
         ['when should I go to a doctor after a headache', 'illness'],
         ['concussion side effects', 'illness'],
         ['mood stabilizers side effects', 'illness'],
+        ['How to get rid of a cold', 'illness'],
+
+        # Simple words for better bag of words model
+        ['Melanoma', 'illness'],
+        ['cancer treatment', 'illness'],
+        ['herpes', 'illness'],
     ]).toDF("text", "label")
 
 
@@ -258,54 +282,107 @@ def top_n(learning_data: DataFrame, input_data: DataFrame, label: str, n: int):
     )
 
 
-def history_features(spark: SparkSession, history: DataFrame):
+def top_n_searches_from_top_k_topics(n: int, k: int, input_data: DataFrame):
+    """
+    Will output top k searches closest to the each cluster center
+    """
+
+    # This code might have an issue of not fully representing your search query.
+    # I suspect the fact that sentence embeddings is an array, each sentence has its own embedding.
+    # For simplicity les just assume it's only one sentence and get the first element
+    input_data_with_top_level_embeddings = input_data.withColumn(
+        'simple_embedding', col('sentence_embeddings')[0].embeddings)
+
+    # Trains a k-means model.
+    kmeans = KMeans().setK(k).setFeaturesCol(
+        "simple_embedding").setPredictionCol("cluster_center")
+    model = kmeans.fit(input_data_with_top_level_embeddings)
+
+    # Make predictions
+    predictions = model.transform(input_data_with_top_level_embeddings)
+
+    # Evaluate clustering by computing Silhouette score
+    evaluator = ClusteringEvaluator(
+        predictionCol='cluster_center', featuresCol='simple_embedding')
+
+    silhouette = evaluator.evaluate(predictions)
+    print("Silhouette with squared euclidean distance = " + str(silhouette))
+
+    cluster_window = Window.partitionBy('cluster_center').orderBy(desc('text'))
+
+    # desc(sqrt(expr('aggregate(transform(cluster_center, (element, idx) -> power(abs(element - element_at(init_vec, idx)), 2)), cast(0 as double), (acc, value) -> acc + value)'))))
+    top_n_from_each_cluster = (
+        predictions
+        .withColumn('row_number', row_number().over(cluster_window))
+        .where(col('row_number') <= n)
+        .groupBy('cluster_center')
+        .agg(f.collect_list('text').alias('top_n_searches'))
+        .collect()
+    )
+
+    return top_n_from_each_cluster
+
+
+def history_features(spark: SparkSession, history: DataFrame, per_feature_limit: int = 100):
     """Extracts a list of features, for now a single feature
     Example features:
     - Your top political searches
     - Main five topics you have searched for in the past year
     """
-    search_history = prepare_data(history)
-    search_history_dedup = dedup_top_n(
-        search_history, 1, col('text'), col('url'))
+    history_dedup = dedup_top_n(
+        history, 1, col('text'), expr('random()'))
 
     # Split the pipeline into stages
-    # 1. Create text embeddings
+    # (1. Create text embeddings
     # 2. Create a classifier
 
-    top_count = 100
+    embedding_pipeline = bert_embeddings_pipeline()
+    def add_embeddings(df: DataFrame): return embedding_pipeline.transform(df)
+
+    # Call fit but hoping it is just a noop
+    history_dedup_with_embeddings = add_embeddings(history_dedup)
+
+    # top_n_searches = top_n_searches_from_top_k_topics(
+    #     15,
+    #     40,
+    #     history_dedup_with_embeddings,
+    # )
+
+    # clusters = {}
+    # for index, cluster in enumerate(top_n_searches):
+    #     clusters[f"Cluster {index}"] = cluster.top_n_searches
+    #     print(f"Cluster {index}")
+    #     for search in cluster.top_n_searches:
+    #         print(search)
+
+    # Return typed list of features
+    # Top N feature
+    # Top Clusters
+    # Timeline of searches
 
     features = {
-        # Non work feature
-        # Filters out boring searches
-        # Do we event want the boring filter?
-        # 'Top non work searches': top_n(
-        #     work_non_work_samples(spark),
-        #     search_history_dedup,
-        #     'non_work',
-        #     top_count
-        # ),
-
         "Clearly nobody talked to you about 'the birds and the bees'. Thankfully you know where to go with these questions": top_n(
-            sexual_samples(spark),
-            search_history_dedup,
+            add_embeddings(sexual_samples(spark)),
+            history_dedup_with_embeddings,
             'sexual',
-            top_count
+            per_feature_limit
         ),
 
         'Your quite an activist ... although we are unsure what party you are in just yet': top_n(
-            political_samples(spark),
-            search_history_dedup,
+            add_embeddings(political_samples(spark)),
+            history_dedup_with_embeddings,
             'political',
-            top_count
+            per_feature_limit
         ),
 
         "I'm surprised you are not dead yet, these are the things you have searched for": top_n(
-            illness_samples(spark),
-            search_history_dedup,
+            add_embeddings(illness_samples(spark)),
+            history_dedup_with_embeddings,
             'illness',
-            top_count
+            per_feature_limit
         ),
 
+        # "Here are the top 20 searches from your top 20 themes": [],
     }
 
     return features

@@ -10,7 +10,7 @@ from flask import Flask, request
 import xmltodict
 
 from custom_types import EntryRow
-from helpers import history_features, spark_init
+from helpers import history_features, spark_init, prepare_data
 
 spark = spark_init()
 
@@ -49,7 +49,7 @@ def upload_zip():
     else:
         return "could not find your activity"
 
-    infile = tempfile.NamedTemporaryFile(dir="./tmp", delete=False)
+    infile = tempfile.NamedTemporaryFile(dir="./tmp", delete=True)
     activity_file = data.open(entry)
     shutil.copyfileobj(activity_file, infile)
 
@@ -104,7 +104,10 @@ def upload_zip():
         )
         entries.append(entry_row)
 
-    features = history_features(spark, spark.createDataFrame(entries))
+    history = spark.createDataFrame(entries)
+    search_history = prepare_data(history)
+
+    features = history_features(spark, search_history)
 
     # \ character is not allowed in f-strings
     nl = '\n'
