@@ -38,14 +38,15 @@
 				"ms-python.python",
 				"ms-python.vscode-pylance",
 				"ms-toolsai.jupyter",
-				"GitHub.copilot"
+				"GitHub.copilot",
+				"sleistner.vscode-fileutils"
 			]
 		}
 	},
 	// Spark UI tries these ports
 	"forwardPorts": [
-		4000,
-		4001
+		4040,
+		8000 // Although this seems to be exposed by default, it's good to be explicit
 	],
 	// See creationWithGPUFailed.log for errors :(
 	// "runArgs": [
@@ -53,8 +54,10 @@
 	// 	"all"
 	// ],
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "pip install -r requirements.txt",
-	"postAttachCommand": "gunicorn --reload --timeout 0 'server:app'",
+	"postCreateCommand": [
+		"pip install -r requirements.txt",
+		"mkdir tmp"
+	],
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"features": {
 		"git": "os-provided",

@@ -12,9 +12,11 @@ RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/
 RUN apt-get update \
     && apt-get install -y openjdk-11-jdk
 
-# Install additional binaries
-RUN mkdir "$HOME/.local/bin"
+# FYI We are in the root / of the container being built
+
+COPY bin/xidel-0.9.8.linux64.tar.gz /tmp/xidel.tar.gz
+
 # Assumes we are in the root of the repo
-RUN cd bin \
-    && tar -x "--directory=$HOME/.local/bin" --file=xidel-0.9.8.linux64.tar.gz xidel \
-    && chmod +x "$HOME/.local/bin/xidel"
+RUN tar -x --directory=/usr/local/bin/ --file=/tmp/xidel.tar.gz xidel
+RUN ls -al /usr/local/bin/
+RUN chmod +x /usr/local/bin/xidel
