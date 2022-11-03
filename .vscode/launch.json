@@ -8,7 +8,7 @@
             "name": "Web",
             "request": "launch",
             "type": "chrome",
-            "url": "http://localhost:8000",
+            "url": "http://localhost:8000/baggie.html",
             "webRoot": "${workspaceFolder}/web/public",
             "preLaunchTask": "build"
         },
