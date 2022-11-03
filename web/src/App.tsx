@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 import { A11y, Navigation, Pagination, Scrollbar } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
-import "./reset.css";
+import "./static/reset.css";
 
-import { ignoreFeedback } from "./slowLearner";
+import { ignoreFeedback } from "./tensorFlowToxicity";
 
 var swiper;
 

@@ -1,22 +1,6 @@
 import * as toxicity from "@tensorflow-models/toxicity";
 import * as _ from "lodash";
-
-import { activity } from "./kirill-activity";
-
-type ActivityEntry = {
-  title: string;
-};
-
-function getSearches() {
-  const typedActivity: ActivityEntry[] = activity as any;
-  return typedActivity.flatMap(({ title }) => {
-    if (title.startsWith("Searched for ")) {
-      return [title.substring("Searched for ".length)];
-    } else {
-      return [];
-    }
-  });
-}
+import { getSearches } from "./helpers";
 
 // Load the model. Users optionally pass in a threshold and an array of
 // labels to include.

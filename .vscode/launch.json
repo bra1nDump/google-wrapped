@@ -5,7 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Webapp",
+            "name": "Web",
+            "request": "launch",
+            "type": "chrome",
+            "url": "http://localhost:8000",
+            "webRoot": "${workspaceFolder}/web/public",
+            "preLaunchTask": "build"
+        },
+        {
+            "name": "Spark server",
             "type": "python",
             "request": "launch",
             "program": "/usr/local/bin/gunicorn",
