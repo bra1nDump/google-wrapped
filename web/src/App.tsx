@@ -57,6 +57,8 @@ type Filter =
   | FuckedUpMeme
   | JerryNewspaperMeme;
 
+// An easy way to avoid this boilerplate is to create a generic meme datastruture
+// { imgSrc, name, relativeBoundingBoxesForText: [int, int, int, int][] }
 type TwoTruthsOneLieMeme = { ctor: "TwoTruthsOneLieMeme" };
 function TwoTruthsOneLieMeme(): Filter {
   return { ctor: "TwoTruthsOneLieMeme" };
@@ -118,10 +120,10 @@ function viewIntroScreen() {
       </button>
       <button
         onClick={function () {
-          applyMsg(ChangeScreen(MemeTemplate(JerryNewspaperMeme())));
+          applyMsg(ChangeScreen(MemeTemplate(BlueBookWTFMeme())));
         }}
       >
-        Open Meme template for ...
+        Open Meme template for BlueBookWTFMeme
       </button>
     </div>
   );
@@ -157,7 +159,7 @@ function PhoneFrame(props: { children: React.ReactNode }) {
         height: "100vh",
       }}
     >
-      <div
+      {/* <div
         onClick={(event) => applyMsg(NoOp())}
         style={{
           border: "1px solid #000",
@@ -165,9 +167,9 @@ function PhoneFrame(props: { children: React.ReactNode }) {
           width: "420px",
           height: "800px",
         }}
-      >
-        {props.children}
-      </div>
+      > */}
+      {props.children}
+      {/* </div> */}
     </div>
   );
 }
@@ -189,7 +191,42 @@ function viewSelectFilter() {
 }
 
 function viewMemeTemplate(meme: Filter) {
-  return <div>Meeeeemeee</div>;
+  return (
+    <div
+      style={{
+        // position: "relative",
+        width: "100%",
+        height: "100%",
+        background: "blue",
+      }}
+    >
+      {/* WHY IS THIS SHIT NOT 100% */}
+      {/* Found this, but still doesn't work somehow https://jsfiddle.net/7qmc53d1/2/ */}
+      <img
+        src="https://www.tjtoday.org/wp-content/uploads/2021/01/IMG_7502.jpg"
+        style={{
+          maxWidth: "100%",
+          maxHeight: "100%",
+          position: "absolute",
+          display: "block",
+          objectFit: "fill",
+          margin: "0 auto",
+          padding: 0,
+        }}
+      />
+      {/* <span
+        style={{
+          position: "absolute",
+          left: "0%",
+          width: "20%",
+          height: "20%",
+          border: "3px solid #73AD21",
+        }}
+      >
+        Your text
+      </span> */}
+    </div>
+  );
 }
 
 function App(model: Model) {
