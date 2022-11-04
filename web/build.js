@@ -7,7 +7,7 @@ esbuild.build({
   outdir: "public",
   platform: "browser",
   bundle: true,
-  minify: true,
+  // minify: true,
   sourcemap: true,
   watch: true,
 
