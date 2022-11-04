@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ignoreFeedback } from "./tensorFlowToxicity";
 
 // Uses TensorflowJs to get some 'interesting' searches and displays them.
