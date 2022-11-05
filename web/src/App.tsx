@@ -11,8 +11,7 @@ import { ignoreFeedback } from "./tensorFlowToxicity";
 //  MAIN
 
 function main(): Program<Model, Msg> {
-  const rootContainer = document.createElement("div");
-  document.body.appendChild(rootContainer);
+  const rootContainer = document.getElementById("app")!;
   return start({
     init: init,
     view: App,
@@ -182,6 +181,7 @@ function viewSelectFilter() {
 
 import { Stage, Layer, Image } from "react-konva";
 import useImage from "use-image";
+import { createRoot } from "react-dom/client";
 
 // the first very simple and recommended way:
 function LionImage() {
@@ -234,19 +234,19 @@ function ViewMemeTemplate(props: { meme: Filter }) {
 }
 
 function App(model: Model) {
-  console.log("got model", model);
+  // console.log("got model", model);
   let page: React.ReactElement;
-  switch (model.route.ctor) {
-    case "Introduction":
-      page = viewIntroScreen();
-      break;
-    case "SelectFilter":
-      page = viewSelectFilter();
-      break;
-    case "MemeTemplate":
-      page = <ViewMemeTemplate meme={model.route.meme} />;
-      break;
-  }
+  //   switch (model.route.ctor) {
+  //     case "Introduction":
+  //       page = viewIntroScreen();
+  //       break;
+  //     case "SelectFilter":
+  //       page = viewSelectFilter();
+  //       break;
+  //     case "MemeTemplate":
+  //       page = <ViewMemeTemplate meme={model.route.meme} />;
+  //       break;
+  //   }
   const [count, set] = useState(0);
   return <div>Counter</div>;
   return <PhoneFrame>{page}</PhoneFrame>;
