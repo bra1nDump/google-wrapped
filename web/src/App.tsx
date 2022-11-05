@@ -159,17 +159,7 @@ function PhoneFrame(props: { children: React.ReactNode }) {
         height: "100vh",
       }}
     >
-      {/* <div
-        onClick={(event) => applyMsg(NoOp())}
-        style={{
-          border: "1px solid #000",
-          backgroundColor: "#fff",
-          width: "420px",
-          height: "800px",
-        }}
-      > */}
       {props.children}
-      {/* </div> */}
     </div>
   );
 }
@@ -190,7 +180,23 @@ function viewSelectFilter() {
   );
 }
 
-function viewMemeTemplate(meme: Filter) {
+import { Stage, Layer, Image } from "react-konva";
+import useImage from "use-image";
+
+// the first very simple and recommended way:
+function LionImage() {
+  const [image] = useImage("https://konvajs.org/assets/lion.png");
+  if (!image) {
+    return <div>Loading</div>;
+  }
+
+  const aspectRatio = image.width / image.width;
+  return <div></div>;
+  //   return <Image image={image} />;
+}
+
+function ViewMemeTemplate(props: { meme: Filter }) {
+  return <LionImage />;
   return (
     <div
       style={{
@@ -238,9 +244,11 @@ function App(model: Model) {
       page = viewSelectFilter();
       break;
     case "MemeTemplate":
-      page = viewMemeTemplate(model.route.meme);
+      page = <ViewMemeTemplate meme={model.route.meme} />;
       break;
   }
+  const [count, set] = useState(0);
+  return <div>Counter</div>;
   return <PhoneFrame>{page}</PhoneFrame>;
 }
 

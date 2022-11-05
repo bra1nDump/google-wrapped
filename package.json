@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "konva": "^8.3.13",
+    "react-konva": "^18.2.3",
+    "use-image": "^1.1.0"
+  }
+}
