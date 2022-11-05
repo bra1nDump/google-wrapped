@@ -33,6 +33,7 @@ let { applyMsg } = main();
 type Model = { route: Route };
 
 function init(): [Model, Array<Cmd<Msg>>] {
+  return [{ route: Introduction() }, []];
   return [{ route: MemeTemplate(BlueBookWTFMeme()) }, []];
 }
 
@@ -111,10 +112,61 @@ function JerryNewspaperMeme(): Filter {
 //            Hello World
 //            </motion.h1>
 
-function viewIntroScreen() {
+function ViewIntroduction() {
+  const takeOutSteps = [
+    <span>
+      Go to
+      <a
+        href="https://takeout.google.com/settings/takeout/downloads"
+        target="_blank"
+      >
+        Google Takeout 🥡
+      </a>
+    </span>,
+    'Click "Deselect all"',
+    'Find and set a checkmark under "My Activity" 🏄',
+    'Click "Next step" on the bottom',
+    'Keep the fields in the next step as is and click "Create export"',
+    "Wait for the email from google (2 minutes) 📥",
+    "Click the link from the email, it will open in google drive 🔗",
+    "Download your Takeout folder 📁",
+    "Return to the website ENABLE AIRPLANE MODE and upload .zip",
+
+    <div
+      style={{
+        padding: "12px",
+        backgroundColor: "#eee",
+        borderRadius: "12px",
+      }}
+    >
+      <input
+        name="file"
+        type="file"
+        style={{
+          padding: "1%",
+          backgroundColor: "#eee",
+          border: "2px solid #ccc",
+          borderRadius: "8px",
+          borderStyle: "dashed",
+          color: "#000",
+          fontWeight: "700",
+        }}
+      />
+    </div>,
+    "Get your search statistics and make means with your search queries",
+  ];
+
   return (
     <div>
-      Intro screen
+      <h2>Pro tip 🐻: can be done entirely from mobile!</h2>
+      <ul
+        style={{
+          textAlign: "left",
+          overflowWrap: "break-word",
+        }}
+      >
+        {...takeOutSteps.map((x) => <li>{x}</li>)}
+      </ul>
       <button
         onClick={function () {
           applyMsg(ChangeScreen(SelectFilter()));
@@ -154,7 +206,6 @@ function PhoneFrame(props: { children: React.ReactNode }) {
   return (
     <div
       style={{
-        backgroundColor: "#e5e5e5",
         display: "flex",
         flexDirection: "row",
         justifyContent: "center",
@@ -168,7 +219,7 @@ function PhoneFrame(props: { children: React.ReactNode }) {
   );
 }
 
-function viewSelectFilter() {
+function ViewSelectFilter() {
   return (
     <div>
       Select Filter
@@ -189,10 +240,10 @@ function App(model: Model) {
   let page: React.ReactElement;
   switch (model.route.ctor) {
     case "Introduction":
-      page = viewIntroScreen();
+      page = ViewIntroduction();
       break;
     case "SelectFilter":
-      page = viewSelectFilter();
+      page = ViewSelectFilter();
       break;
     case "MemeTemplate":
       page = <ViewMemeTemplate />;
