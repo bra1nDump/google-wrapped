@@ -17,10 +17,13 @@
     "@tensorflow/tfjs": "^4.0.0",
     "@zip.js/zip.js": "^2.6.52",
     "framer-motion": "^7.6.2",
+    "konva": "^8.3.13",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "swiper": "^8.4.4"
+    "react-konva": "^18.2.3",
+    "swiper": "^8.4.4",
+    "use-image": "^1.1.0"
   },
   "scripts": {
     "start": "node build.js & npx http-server -p 8000 -c-1 public"

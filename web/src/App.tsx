@@ -5,8 +5,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import "./static/reset.css";
 import { start, Program, Cmd, Sub } from "./platform";
-
-import { ignoreFeedback } from "./tensorFlowToxicity";
+import { ViewMemeTemplate } from "./MemeTemplate";
+import { createRoot } from "react-dom/client";
 
 //  MAIN
 
@@ -22,6 +22,11 @@ function main(): Program<Model, Msg> {
 }
 
 let { applyMsg } = main();
+
+// Playground when our platform breaks lol
+// const rootContainer = document.getElementById("app")!;
+// const ruled = createRoot(rootContainer);
+// ruled.render(<ViewMemeTemplate />);
 
 // MODEL
 
@@ -179,76 +184,20 @@ function viewSelectFilter() {
   );
 }
 
-import { Stage, Layer, Image } from "react-konva";
-import useImage from "use-image";
-import { createRoot } from "react-dom/client";
-
-// the first very simple and recommended way:
-function LionImage() {
-  const [image] = useImage("https://konvajs.org/assets/lion.png");
-  if (!image) {
-    return <div>Loading</div>;
-  }
-
-  const aspectRatio = image.width / image.width;
-  return <div></div>;
-  //   return <Image image={image} />;
-}
-
-function ViewMemeTemplate(props: { meme: Filter }) {
-  return <LionImage />;
-  return (
-    <div
-      style={{
-        position: "relative",
-        width: "100%",
-        height: "100%",
-        background: "blue",
-      }}
-    >
-      <img
-        src="https://www.tjtoday.org/wp-content/uploads/2021/01/IMG_7502.jpg"
-        style={{
-          top: 0,
-          maxWidth: "100%",
-          maxHeight: "100%",
-          width: "100%",
-          height: "100%",
-          position: "absolute",
-          objectFit: "contain",
-        }}
-      />
-      <span
-        style={{
-          position: "absolute",
-          left: "0%",
-          width: "20%",
-          height: "20%",
-          border: "3px solid #73AD21",
-        }}
-      >
-        Your text
-      </span>
-    </div>
-  );
-}
-
 function App(model: Model) {
-  // console.log("got model", model);
+  console.log("got model", model);
   let page: React.ReactElement;
-  //   switch (model.route.ctor) {
-  //     case "Introduction":
-  //       page = viewIntroScreen();
-  //       break;
-  //     case "SelectFilter":
-  //       page = viewSelectFilter();
-  //       break;
-  //     case "MemeTemplate":
-  //       page = <ViewMemeTemplate meme={model.route.meme} />;
-  //       break;
-  //   }
-  const [count, set] = useState(0);
-  return <div>Counter</div>;
+  switch (model.route.ctor) {
+    case "Introduction":
+      page = viewIntroScreen();
+      break;
+    case "SelectFilter":
+      page = viewSelectFilter();
+      break;
+    case "MemeTemplate":
+      page = <ViewMemeTemplate />;
+      break;
+  }
   return <PhoneFrame>{page}</PhoneFrame>;
 }
 
