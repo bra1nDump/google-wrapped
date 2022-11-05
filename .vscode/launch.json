@@ -8,7 +8,7 @@
             "name": "Web",
             "request": "launch",
             "type": "chrome",
-            "url": "http://localhost:8000/baggie.html",
+            "url": "http://localhost:8000",
             "webRoot": "${workspaceFolder}/web/public",
             "preLaunchTask": "build"
         },
@@ -26,6 +26,14 @@
                 "1",
                 "--timeout=72000"
             ],
-        }
+        },
+        {
+            "name": "Data playground - web",
+            "request": "launch",
+            "type": "chrome",
+            "url": "http://localhost:8000/baggie.html",
+            "webRoot": "${workspaceFolder}/web/public",
+            "preLaunchTask": "build"
+        },
     ]
 }

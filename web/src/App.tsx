@@ -29,7 +29,7 @@ let { applyMsg } = main();
 type Model = { route: Route };
 
 function init(): [Model, Array<Cmd<Msg>>] {
-  return [{ route: Introduction() }, []];
+  return [{ route: MemeTemplate(BlueBookWTFMeme()) }, []];
 }
 
 type Route = Introduction | SelectFilter | MemeTemplate;
@@ -194,27 +194,25 @@ function viewMemeTemplate(meme: Filter) {
   return (
     <div
       style={{
-        // position: "relative",
+        position: "relative",
         width: "100%",
         height: "100%",
         background: "blue",
       }}
     >
-      {/* WHY IS THIS SHIT NOT 100% */}
-      {/* Found this, but still doesn't work somehow https://jsfiddle.net/7qmc53d1/2/ */}
       <img
         src="https://www.tjtoday.org/wp-content/uploads/2021/01/IMG_7502.jpg"
         style={{
+          top: 0,
           maxWidth: "100%",
           maxHeight: "100%",
+          width: "100%",
+          height: "100%",
           position: "absolute",
-          display: "block",
-          objectFit: "fill",
-          margin: "0 auto",
-          padding: 0,
+          objectFit: "contain",
         }}
       />
-      {/* <span
+      <span
         style={{
           position: "absolute",
           left: "0%",
@@ -224,7 +222,7 @@ function viewMemeTemplate(meme: Filter) {
         }}
       >
         Your text
-      </span> */}
+      </span>
     </div>
   );
 }

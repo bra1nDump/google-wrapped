@@ -12,6 +12,7 @@ esbuild.build({
   watch: true,
 
   plugins: [
+    // Will not reload - does not respect watch option
     copyStaticFiles({
       src: "src/static",
       dest: "public",
