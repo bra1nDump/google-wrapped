@@ -21,7 +21,7 @@ import { Bag, downloadBags, findInteresting, Search } from "./BaggyWords";
 function main(): Program<Model, Msg> {
   const rootContainer = document.getElementById("app")!;
   return start({
-    init: init,
+    init: initTestStories,
     view: App,
     update: update,
     subscriptions: subscriptions,
@@ -67,46 +67,46 @@ const kirillSampleSearches = [
   "how to remove all bots from instagram",
 ];
 
-function init(): [Model, Array<Cmd<Msg>>] {
-  return (
-    // [ { route: MemeTemplate(BlueBookWTFMeme())
+function initTestStories(): [Model, Array<Cmd<Msg>>] {
+  return [
+    {
+      route: { ctor: "Stories" },
+      bags: [],
+      searches: ["lol", "lil"],
+      editors: [sampleBlueBookKirill, { ...sampleBlueBookKirill }],
+      activeEditor: 0,
+    },
     [
-      {
-        route: Introduction(),
-        bags: [],
-        searches: [],
-        editors: [sampleBlueBookKirill],
-        activeEditor: 0,
-      },
-      [
-        cmdOfAsync(async () => {
-          const bags = await downloadBags();
-          return { ctor: "UpdateBags", bags } as Msg;
-        }),
-      ],
-    ]
-  );
+      cmdOfAsync(async () => {
+        const bags = await downloadBags();
+        return { ctor: "UpdateBags", bags } as Msg;
+      }),
+    ],
+  ];
 }
 
-type Route = Introduction | SelectFilter | MemeTemplate | SearchPicker;
-type Introduction = { ctor: "Introduction" };
-function Introduction(): Route {
-  return { ctor: "Introduction" };
+function init(): [Model, Array<Cmd<Msg>>] {
+  return [
+    {
+      route: { ctor: "Introduction" },
+      bags: [],
+      searches: [],
+      editors: [sampleBlueBookKirill],
+      activeEditor: 0,
+    },
+    [
+      cmdOfAsync(async () => {
+        const bags = await downloadBags();
+        return { ctor: "UpdateBags", bags } as Msg;
+      }),
+    ],
+  ];
 }
-type SelectFilter = { ctor: "SelectFilter"; centerStage: Filter };
 
-function SelectFilter(): Route {
-  return { ctor: "SelectFilter", centerStage: "TwoTruthsOneLieMeme" };
-}
-type MemeTemplate = { ctor: "MemeTemplate"; meme: Filter; searches: string[] };
-function MemeTemplate(meme: Filter, searches: Search[]): Route {
-  return { ctor: "MemeTemplate", meme, searches };
-}
-
-type SearchPicker = { ctor: "SearchPicker"; slotIndex: number };
-
-// An easy way to avoid this boilerplate is to create a generic meme datastruture
-// { imgSrc, name, relativeBoundingBoxesForText: [int, int, int, int][] }
+type Route =
+  | { ctor: "Introduction" }
+  | { ctor: "Stories" }
+  | { ctor: "SearchPicker"; slotIndex: number };
 
 // VIEW
 
@@ -154,38 +154,6 @@ function ViewIntroduction() {
   );
 }
 
-function ViewIntroScreen() {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-        textAlign: "center",
-        padding: "1em",
-      }}
-    >
-      <span style={{ marginBottom: "1em" }}>Compliance brings reward</span>
-
-      <span style={{ marginBottom: "1em" }}>
-        You <strong>will</strong> comply
-      </span>
-      <motion.span
-        animate={{ y: 300 }}
-        transition={{ type: "spring", duration: 1 }}
-      >
-        <button
-          onClick={function () {
-            applyMsg(ChangeScreen(SelectFilter()));
-          }}
-        >
-          I will comply
-        </button>
-      </motion.span>
-    </div>
-  );
-}
-
 function PhoneFrame(props: { children: React.ReactNode }) {
   return (
     <div
@@ -199,22 +167,6 @@ function PhoneFrame(props: { children: React.ReactNode }) {
       }}
     >
       {props.children}
-    </div>
-  );
-}
-
-function ViewSelectFilter() {
-  return (
-    <div>
-      Select Filter
-      <button
-        onClick={function () {
-          applyMsg(ChangeScreen(Introduction()));
-        }}
-        value={"foo"}
-      >
-        Go to intro
-      </button>
     </div>
   );
 }
@@ -243,65 +195,45 @@ function ViewSearchPicker(props: {
 
 function App(model: Model) {
   console.log("got model", model);
-  let page: React.ReactElement;
-  switch (model.route.ctor) {
-    case "Introduction":
-      page = ViewIntroduction();
-      break;
-    case "SelectFilter":
-      page = ViewSelectFilter();
-      break;
-    case "MemeTemplate":
-      page = (
-        <ViewMemeTemplate
-          editor={model.editors[0]}
-          searches={model.route.searches}
-          pickerForSlot={(slot: number) => {
-            applyMsg({ ctor: "OpenPicker", holeIndex: slot });
-          }}
-        />
-      );
-      break;
-    case "SearchPicker":
-      const slotIndex = model.route.slotIndex;
-      page = (
-        <ViewSearchPicker
-          onPick={(search: string) => {
-            applyMsg({
-              ctor: "UpdateHole",
-              holeIndex: slotIndex,
-              text: search,
-            });
-          }}
-          searches={model.searches}
-        />
-      );
-      break;
+
+  function Router(model: Model) {
+    switch (model.route.ctor) {
+      case "Introduction":
+        return ViewIntroduction();
+      case "Stories":
+        return (
+          <StoriesEditor editors={model.editors} searches={model.searches} />
+        );
+      case "SearchPicker":
+        const slotIndex = model.route.slotIndex;
+        return (
+          <ViewSearchPicker
+            onPick={(search: string) => {
+              applyMsg({
+                ctor: "UpdateHole",
+                holeIndex: slotIndex,
+                text: search,
+              });
+            }}
+            searches={model.searches}
+          />
+        );
+    }
   }
-  return <PhoneFrame>{page}</PhoneFrame>;
+
+  return <PhoneFrame>{Router(model)}</PhoneFrame>;
 }
 
-function viewSelectFilter() {
+function StoriesEditor(props: { editors: Editor[]; searches: Search[] }) {
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateRows: "100px 1fr min-content",
+        gridTemplateRows: "100% 1fr min-content",
         height: "100%",
-        width: "420px",
+        width: "100%",
       }}
     >
-      <span>
-        Select Filter
-        <button
-          onClick={function () {
-            applyMsg(ChangeScreen(Introduction()));
-          }}
-          value={"foo"}
-        >
-          Go to intro
-        </button>
-      </span>
       <Swiper
         effect={"coverflow"}
         modules={[Navigation, Pagination, Scrollbar, A11y]}
@@ -310,30 +242,26 @@ function viewSelectFilter() {
         //spaceBetween={50}
         //navigation
         loop
-        style={{ width: "100%" }}
+        touchStartPreventDefault={false}
+        style={{ width: "100%", height: "100%" }}
         //scrollbar={{ draggable: true }}
         //pagination={{ clickable: true }}
         onActiveIndexChange={(e) => console.log(e.activeIndex)}
       >
-        <SwiperSlide style={{ backgroundColor: "lightgrey" }}>
-          Slide 1
-        </SwiperSlide>
-        <SwiperSlide style={{ backgroundColor: "lightgreen" }}>
-          Slide 2
-        </SwiperSlide>
-        <SwiperSlide style={{ backgroundColor: "lightpink" }}>
-          Slide 3
-        </SwiperSlide>
-        <SwiperSlide style={{ backgroundColor: "lightblue" }}>
-          Slide 4
-        </SwiperSlide>
-        <SwiperSlide style={{ backgroundColor: "lightsalmon" }}>
-          Slide 5
-        </SwiperSlide>
+        {...props.editors.map((editor) => {
+          return (
+            <SwiperSlide style={{ backgroundColor: "lightgrey" }}>
+              <ViewMemeTemplate
+                editor={editor}
+                pickerForSlot={(slot: number) => {
+                  applyMsg({ ctor: "OpenPicker", holeIndex: slot });
+                }}
+                searches={props.searches}
+              />
+            </SwiperSlide>
+          );
+        })}
       </Swiper>
-      <div style={{ backgroundColor: "blue", paddingBottom: "1em" }}>
-        <button>Select Filter</button>
-      </div>
     </div>
   );
 }
@@ -348,17 +276,6 @@ function viewMemePicker() {
         width: "420px",
       }}
     >
-      <span>
-        Select Filter
-        <button
-          onClick={function () {
-            applyMsg(ChangeScreen(Introduction()));
-          }}
-          value={"foo"}
-        >
-          Go to intro
-        </button>
-      </span>
       <Swiper
         effect={"coverflow"}
         modules={[Navigation, Pagination, Scrollbar, A11y]}
@@ -389,17 +306,12 @@ function viewMemePicker() {
 // UPDATE
 
 type Msg =
-  | NoOp
   | ChangeScreen
   | { ctor: "UpdateBags"; bags: Bag[] }
   | { ctor: "UpdateSearches"; searches: string[] }
   | { ctor: "OpenPicker"; holeIndex: number }
   | { ctor: "UpdateHole"; holeIndex: number; text: string };
 
-type NoOp = { ctor: "NoOp" };
-function NoOp(): Msg {
-  return { ctor: "NoOp" };
-}
 type ChangeScreen = { ctor: "ChangeScreen"; route: Route };
 function ChangeScreen(route: Route): Msg {
   return { ctor: "ChangeScreen", route };
@@ -417,8 +329,6 @@ function arrayUpdate<T>(index: number, array: T[], update: (_: T) => T): T[] {
 function update(msg: Msg, model: Model): [Model, Array<Cmd<Msg>>] {
   var newModel;
   switch (msg.ctor) {
-    case "NoOp":
-      return [model, []];
     case "ChangeScreen":
       newModel = Object.assign({}, model, { route: msg.route });
       return [newModel, []];
@@ -443,13 +353,7 @@ function update(msg: Msg, model: Model): [Model, Array<Cmd<Msg>>] {
       );
       return [
         _.assign(model, { searches: interestingSearchesFlat }),
-        [
-          cmdOf(
-            ChangeScreen(
-              MemeTemplate("BlueBookWTFMeme", interestingSearchesFlat)
-            )
-          ),
-        ],
+        [cmdOf(ChangeScreen({ ctor: "Stories" }))],
       ];
     case "OpenPicker":
       newModel = Object.assign({}, model, {
@@ -458,7 +362,6 @@ function update(msg: Msg, model: Model): [Model, Array<Cmd<Msg>>] {
       return [newModel, []];
     case "UpdateHole":
       newModel = _.assign(model, {
-        route: MemeTemplate("BlueBookWTFMeme", model.searches),
         editors: arrayUpdate(model.activeEditor, model.editors, (editor) => {
           return _.assign(editor, {
             slots: arrayUpdate(msg.holeIndex, editor.slots, (_) => msg.text),
@@ -466,7 +369,10 @@ function update(msg: Msg, model: Model): [Model, Array<Cmd<Msg>>] {
         }),
       });
 
-      return [newModel, []];
+      return [
+        newModel,
+        [cmdOf({ ctor: "ChangeScreen", route: { ctor: "Stories" } } as Msg)],
+      ];
   }
 }
 
