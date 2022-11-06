@@ -110,6 +110,49 @@ type Route =
 
 // VIEW
 
+function ViewStep(props:any) {
+    const [done, setDone] = useState(false);
+    let icon;
+    let backgroundColor;
+    let border;
+    if (done) {
+      backgroundColor = "#d8ffe4";
+      border = "2px solid #10b981";
+
+      icon = (
+        <svg style={{flex: "0 0 auto", marginRight: "8px"}} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7.25 12.25L10.25 15.25L16.75 8.75" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="12" r="10.25" stroke="black" stroke-width="1.5"/>
+        </svg>
+      );
+    } else {
+      backgroundColor = "";
+      border = "2px solid #e5e5e5";
+
+      icon = (
+        <svg style={{flex: "0 0 auto", marginRight: "8px"}} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10.25" stroke="black" stroke-width="1.5"/>
+        </svg>
+      );
+
+    }
+    return (
+      <li style={{
+        display: "flex",
+        padding: "12px",
+        margin: "12px 0",
+        borderRadius: "6px", 
+        backgroundColor,
+        border,
+      }}
+      onClick={() => setDone(!done)}
+      >
+        {icon}
+        {props.children}
+      </li>
+    );
+}
+
 function ViewIntroduction() {
   const takeOutSteps = [
     <span>
@@ -129,47 +172,39 @@ function ViewIntroduction() {
     "Click the link from the email, it will open in google drive 🔗",
     "Download your Takeout folder 📁",
     "Return to the website ENABLE AIRPLANE MODE and upload .zip",
-
-    // that I have missed this trick so much
-    <ZipUpload
-      nextStage={(searches: string[]) => {
-        applyMsg({ ctor: "UpdateSearches", searches });
-      }}
-    />,
-    "Get your search statistics and make means with your search queries",
   ];
 
   return (
-    <div>
+    <div style={{ padding: "0px 12px" }}>
       <h2>Pro tip 🐻: can be done entirely from mobile!</h2>
       <ul
         style={{
           textAlign: "left",
           overflowWrap: "break-word",
-        }}
+          listStyle: "none",
+          padding: "0",
+      }}
       >
-        {...takeOutSteps.map((x) => <li>{x}</li>)}
+        {...takeOutSteps.map((x) => {
+          return (<ViewStep>{x}</ViewStep>);
+        })}
       </ul>
+      <ZipUpload
+        nextStage={(searches: string[]) => {
+          applyMsg({ ctor: "UpdateSearches", searches });
+        }}
+      />,
+      <div>
+        Get your search statistics and make means with your search queries"
+      </div>
     </div>
   );
 }
 
-function PhoneFrame(props: { children: React.ReactNode }) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100vw",
-        height: "100vh",
-      }}
-    >
-      {props.children}
-    </div>
-  );
-}
+
+//<button onClick={function() {
+//    applyMsg(ChangeScreen(SelectFilter()))
+//} }>
 
 function ViewSearchPicker(props: {
   onPick: (search: string) => void;
@@ -220,8 +255,14 @@ function App(model: Model) {
         );
     }
   }
+  return (
+    <div id="app-frame">
+       <div id="phone-frame">
+        {Router(model)}
+      </div>
+    </div>
+  );
 
-  return <PhoneFrame>{Router(model)}</PhoneFrame>;
 }
 
 function StoriesEditor(props: { editors: Editor[]; searches: Search[] }) {

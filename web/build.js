@@ -10,6 +10,7 @@ esbuild.build({
   // minify: true,
   sourcemap: true,
   watch: true,
+  external: ['*.woff2'],
 
   plugins: [
     // Will not reload - does not respect watch option

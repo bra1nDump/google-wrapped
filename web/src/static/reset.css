@@ -4,33 +4,3 @@ html {
   padding: 0;
 }
 
-body {
-  background-image: linear-gradient(123deg, #ffffff 0%, #00b2ff 100%),
-    linear-gradient(236deg, #baff99 0%, #005e64 100%),
-    linear-gradient(180deg, #ffffff 0%, #002a5a 100%),
-    linear-gradient(
-      225deg,
-      #0094ff 20%,
-      #bff4ed 45%,
-      #280f34 45%,
-      #280f34 70%,
-      #ff004e 70%,
-      #e41655 85%,
-      #b30753 85%,
-      #b30753 100%
-    ),
-    linear-gradient(
-      135deg,
-      #0e0220 15%,
-      #0e0220 35%,
-      #e40475 35%,
-      #e40475 60%,
-      #48e0e4 60%,
-      #48e0e4 68%,
-      #d7fbf6 68%,
-      #d7fbf6 100%
-    );
-  background-blend-mode: overlay, overlay, overlay, darken, normal;
-  color: #fff;
-  font-family: system-ui, Helvetica, Arial, sans-serif;
-}
