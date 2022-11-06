@@ -4,18 +4,37 @@ import { createRoot } from "react-dom/client";
 
 import { getBagOfWords, getSearches } from "./helpers";
 
-type Search = string;
-type Bag = [string, string[]];
+export type Search = string;
+export type Bag = [string, string[]];
+
+export async function downloadBags() {
+  const bagTopics = ["illnesses", "political", "sexual"];
+  const bags = await Promise.all(bagTopics.map(getBagOfWords));
+  const topicAndBagList = zip(bagTopics, bags) as Bag[];
+  return topicAndBagList;
+}
+
+/**
+ *
+ * @param searches All searches for user
+ * @param bags Pre fetched list of bags [topic, words associated with the topic]
+ * @returns Similar to bags, [topic, user searches associated with the topic]
+ */
+export function findInteresting(
+  searches: Search[],
+  bags: Bag[]
+): [string, string[]][] {
+  return bags.map(([topic, bag]) => {
+    return [topic, topNInterestingSearches(bag, 100, searches)];
+  });
+}
 
 export function BaggyWords(props: { searches: Search[] }) {
-  const bagTopics = ["illnesses", "political", "sexual"];
   const [bags, setBags] = useState<Bag[]>();
 
   useEffect(() => {
     async function run() {
-      const bags = await Promise.all(bagTopics.map(getBagOfWords));
-      const topicAndBagList = zip(bagTopics, bags) as Bag[];
-      setBags(topicAndBagList);
+      setBags(await downloadBags());
     }
     run();
   }, []);

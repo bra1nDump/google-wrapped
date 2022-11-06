@@ -1,5 +1,3 @@
-//import { activity as kirillActivity } from "./kirill-activity";
-
 export type ActivityEntry = {
   title: string;
 };

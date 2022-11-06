@@ -39,20 +39,38 @@ export function start<Model extends {}, Msg>(
     applyMsg: applyMsg,
   };
 
+  function runCmds(cmds: Cmd<Msg>[]) {
+    cmds.map((cmd) => cmd(program));
+  }
+
   function applyMsg(msg: Msg) {
     const [newModel, cmds] = config.update(msg, model);
     model = newModel;
     const reactElement = React.createElement(config.view, model);
     root.render(reactElement);
-    //runCmds(cmds)
+    runCmds(cmds);
     //const subscriptions = config.subscriptions(model);
     //applySubs(subscriptions);
   }
 
   const reactElement = React.createElement(config.view, program.model);
   root.render(reactElement);
-  //runCmds(cmds)
+  runCmds(cmds);
   //const subscriptions = config.subscriptions(model);
   //applySubs(subscriptions);
   return program;
+}
+
+export function cmdOf<Msg>(msg: Msg): Cmd<Msg> {
+  return (program) => {
+    program.applyMsg(msg);
+  };
+}
+
+export function cmdOfAsync<Msg>(
+  asyncComputation: () => Promise<Msg>
+): Cmd<Msg> {
+  return (program) => {
+    asyncComputation().then(program.applyMsg);
+  };
 }
