@@ -31,22 +31,64 @@ let { applyMsg } = main();
 
 // MODEL
 
-type Model = { route: Route };
+type Model =
+    { route: Route
+    , searches: Array<string>
+    , editors: Array<Editor>
+    , activeEditor: number
+    }
+
+type Editor = { filter: Filter, slots: string[] } ;
+type Url = string
+
+type OtherFilter = {};
 
 function init(): [Model, Array<Cmd<Msg>>] {
-  return [{ route: Introduction() }, []];
-  // return [{ route: MemeTemplate(BlueBookWTFMeme()) }, []];
+    return (
+        // [ { route: MemeTemplate(BlueBookWTFMeme())
+        [ { route: Introduction()
+          , searches:
+            [ "can I call with a robot"
+            , "American hairless terrier adoption"
+            , "sleeping on a full stomach"
+            , "do mattress stores rolled up"
+            , "how to open beer with a spoon"
+            , "what time do squirrels go to sleep"
+            , "what can do if i find foreign object in food"
+            , "how do turtles reproductive organs"
+            , "pet smartness rank"
+            , "ingredients in soylent causing diarrhea"
+            , "together we will end homelessness"
+            , "most sketchy surveillance in usa"
+            , "nuclear.plant.meltdown recent"
+            , "how to take care of baby lizards"
+            , "use is cold as man painter"
+            , "swastika german"
+            , "how to remove all bots from instagram"
+            ]
+          , editors: []
+          , activeEditor: -1,
+          }
+        , []
+        ]
+    );
 }
 
-type Route = Introduction | SelectFilter | MemeTemplate;
+type Route
+    = Introduction
+    | SelectFilter
+    | MemeTemplate;
+    ;
 
-type Introduction = { ctor: "Introduction" };
-function Introduction(): Route {
-  return { ctor: "Introduction" };
-}
-type SelectFilter = { ctor: "SelectFilter"; centerStage: Filter };
+type Introduction = { ctor: "Introduction" }
+function Introduction(): Route { return { ctor: "Introduction" } }
+type SelectFilter =
+    { ctor: "SelectFilter"
+    , centerStage : Filter
+    }
+
 function SelectFilter(): Route {
-  return { ctor: "SelectFilter", centerStage: { ctor: "TwoTruthsOneLieMeme" } };
+  return { ctor: "SelectFilter", centerStage: "TwoTruthsOneLieMeme" };
 }
 type MemeTemplate = { ctor: "MemeTemplate"; meme: Filter };
 function MemeTemplate(searches: string[], meme: Filter): Route {
@@ -54,64 +96,21 @@ function MemeTemplate(searches: string[], meme: Filter): Route {
 }
 
 type Filter =
-  | TwoTruthsOneLieMeme
-  | UncoverGhostMeme
-  | TypesOfHeadacheMeme
-  | GalaxyBrainMeme
-  | SpongeBobPaysUpMeme
-  | BlueBookWTFMeme
-  | FuckedUpMeme
-  | JerryNewspaperMeme;
+  | "TwoTruthsOneLieMeme"
+  | "UncoverGhostMeme"
+  | "TypesOfHeadacheMeme"
+  | "GalaxyBrainMeme"
+  | "SpongeBobPaysUpMeme"
+  | "BlueBookWTFMeme"
+  | "FuckedUpMeme"
+  | "JerryNewspaperMeme"
+  ;
 
 // An easy way to avoid this boilerplate is to create a generic meme datastruture
 // { imgSrc, name, relativeBoundingBoxesForText: [int, int, int, int][] }
-type TwoTruthsOneLieMeme = { ctor: "TwoTruthsOneLieMeme" };
-function TwoTruthsOneLieMeme(): Filter {
-  return { ctor: "TwoTruthsOneLieMeme" };
-}
-
-type UncoverGhostMeme = { ctor: "UncoverGhostMeme" };
-function UncoverGhostMeme(): Filter {
-  return { ctor: "UncoverGhostMeme" };
-}
-
-type TypesOfHeadacheMeme = { ctor: "TypesOfHeadacheMeme" };
-function TypesOfHeadacheMeme(): Filter {
-  return { ctor: "TypesOfHeadacheMeme" };
-}
-
-type GalaxyBrainMeme = { ctor: "GalaxyBrainMeme" };
-function GalaxyBrainMeme(): Filter {
-  return { ctor: "GalaxyBrainMeme" };
-}
-
-type SpongeBobPaysUpMeme = { ctor: "SpongeBobPaysUpMeme" };
-function SpongeBobPaysUpMeme(): Filter {
-  return { ctor: "SpongeBobPaysUpMeme" };
-}
-
-type BlueBookWTFMeme = { ctor: "BlueBookWTFMeme" };
-function BlueBookWTFMeme(): Filter {
-  return { ctor: "BlueBookWTFMeme" };
-}
-
-type FuckedUpMeme = { ctor: "FuckedUpMeme" };
-function FuckedUpMeme(): Filter {
-  return { ctor: "FuckedUpMeme" };
-}
-
-type JerryNewspaperMeme = { ctor: "JerryNewspaperMeme" };
-function JerryNewspaperMeme(): Filter {
-  return { ctor: "JerryNewspaperMeme" };
-}
 
 // VIEW
 
-//            <motion.h1
-//            animate={{x:300}}
-//            >
-//            Hello World
-//            </motion.h1>
 
 function ViewIntroduction() {
   const takeOutSteps = [
@@ -136,7 +135,7 @@ function ViewIntroduction() {
     // that I have missed this trick so much
     <ZipUpload
       nextStage={(searches: string[]) => {
-        applyMsg(ChangeScreen(MemeTemplate(searches, BlueBookWTFMeme())));
+        applyMsg(ChangeScreen(MemeTemplate(searches, "BlueBookWTFMeme")));
       }}
     />,
     "Get your search statistics and make means with your search queries",
@@ -157,22 +156,30 @@ function ViewIntroduction() {
   );
 }
 
-//            <Swiper
-//                modules={[Navigation, Pagination, Scrollbar, A11y]}
-//                onSwiper={(s) => (window.swiper = s)}
-//                slidesPerView={1}
-//                spaceBetween={50}
-//                navigation
-//                loop
-//                scrollbar={{ draggable: true }}
-//                pagination={{ clickable: true }}
-//              >
-//                <SwiperSlide><div style={{backgroundColor: "green"}}>Slide 1</div></SwiperSlide>
-//                <SwiperSlide>Slide 2</SwiperSlide>
-//                <SwiperSlide>Slide 3</SwiperSlide>
-//                <SwiperSlide>Slide 4</SwiperSlide>
-//                <SwiperSlide>Slide 5</SwiperSlide>
-//              </Swiper>
+function ViewIntroScreen() {
+    return (
+        <div style={{ display: "flex", justifyContent:"center", flexDirection: "column", textAlign: "center", padding: "1em"}}>
+            <span style={{marginBottom: "1em"}}>
+                Compliance brings reward
+            </span>
+            
+            <span style={{marginBottom: "1em"}}>
+                You <strong>will</strong> comply
+            </span>
+            <motion.span
+            animate={{y:300}}
+            transition={{type: "spring", duration: 1}}
+            >
+                <button onClick={function() {
+                    applyMsg(ChangeScreen(SelectFilter()))
+                } }>
+                    I will comply
+                </button>
+            </motion.span>
+        </div>
+    );
+}
+
 
 function PhoneFrame(props: { children: React.ReactNode }) {
   return (
@@ -222,6 +229,113 @@ function App(model: Model) {
       break;
   }
   return <PhoneFrame>{page}</PhoneFrame>;
+}
+
+function viewSelectFilter() {
+    return (
+        <div style={{
+            display: "grid",
+            gridTemplateRows: "100px 1fr min-content",
+            height: "100%",
+            width: "420px",
+
+        }}>
+            <span>
+                Select Filter
+                <button onClick={function() { applyMsg(ChangeScreen(Introduction())) }} value={"foo"}>
+                    Go to intro
+            </button>
+            </span>
+                <Swiper
+                    effect={"coverflow"}
+                    modules={[Navigation, Pagination, Scrollbar, A11y]}
+                    //onSwiper={(s) => (window.swiper = s)}
+                    slidesPerView={1}
+                    //spaceBetween={50}
+                    //navigation
+                    loop
+                    style={{width: "100%"}}
+                    //scrollbar={{ draggable: true }}
+                    //pagination={{ clickable: true }}
+                    onActiveIndexChange={(e) => console.log(e.activeIndex) }
+                  >
+                    <SwiperSlide style={{backgroundColor: "lightgrey"}}>
+                        Slide 1
+                    </SwiperSlide>
+                    <SwiperSlide style={{backgroundColor: "lightgreen"}}>
+                        Slide 2
+                    </SwiperSlide>
+                    <SwiperSlide style={{backgroundColor: "lightpink"}}>
+                        Slide 3
+                    </SwiperSlide>
+                    <SwiperSlide style={{backgroundColor: "lightblue"}}>
+                        Slide 4
+                    </SwiperSlide>
+                    <SwiperSlide style={{backgroundColor: "lightsalmon"}}>
+                        Slide 5
+                    </SwiperSlide>
+                </Swiper>
+            <div style={
+                { backgroundColor: "blue"
+                , paddingBottom: "1em"
+                }
+            }>
+                <button>
+                    Select Filter
+                </button>
+            </div>
+        </div>
+    );
+}
+
+function viewMemePicker() {
+    return (
+        <div style={{
+            display: "grid",
+            gridTemplateRows: "100px 1fr min-content",
+            height: "100%",
+            width: "420px",
+
+        }}>
+            <span>
+                Select Filter
+                <button onClick={function() { applyMsg(ChangeScreen(Introduction())) }} value={"foo"}>
+                    Go to intro
+            </button>
+            </span>
+                <Swiper
+                    effect={"coverflow"}
+                    modules={[Navigation, Pagination, Scrollbar, A11y]}
+                    //onSwiper={(s) => (window.swiper = s)}
+                    slidesPerView={1}
+                    //spaceBetween={50}
+                    //navigation
+                    style={{width: "100%"}}
+                    //scrollbar={{ draggable: true }}
+                    //pagination={{ clickable: true }}
+                    onActiveIndexChange={(e) => console.log(e.activeIndex) }
+                  >
+                    <SwiperSlide style={{backgroundColor: "lightgrey"}}>
+                        Meme
+                    </SwiperSlide>
+                    <SwiperSlide style={{backgroundColor: "lightgreen"}}>
+                        Picker
+                    </SwiperSlide>
+                    <SwiperSlide style={{backgroundColor: "lightpink"}}>
+                        Rejects
+                    </SwiperSlide>
+                </Swiper>
+            <div style={
+                { backgroundColor: "blue"
+                , paddingBottom: "1em"
+                }
+            }>
+                <button>
+                    Select Filter
+                </button>
+            </div>
+        </div>
+    );
 }
 
 // UPDATE

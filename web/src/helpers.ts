@@ -1,10 +1,10 @@
-import { activity as kirillActivity } from "./kirill-activity";
+//import { activity as kirillActivity } from "./kirill-activity";
 
 export type ActivityEntry = {
   title: string;
 };
 
-export function getSearches(activity: any = kirillActivity) {
+export function getSearches(activity: any = []) {
   const typedActivity: ActivityEntry[] = activity as any;
   return typedActivity.flatMap(({ title }) => {
     if (title.startsWith("Searched for ")) {
