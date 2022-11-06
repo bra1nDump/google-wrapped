@@ -1,0 +1,148 @@
+body {
+    font-family: /*Inter,*/ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+    line-height: 1.5;
+    background-image: linear-gradient(0deg, #fff, #dcf0fb);
+}
+
+#about {
+    background-image: url('oval-background.png?v=1');
+    background-position: top -280px center;
+    background-size: 700px;
+    margin-top: -20px;
+    position: relative;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    color: #fff;
+    padding: 0 12px 12px 12px;
+    min-height: 320px;
+    margin: 0;
+    box-sizing:border-box;
+}
+#title {
+    color: rgb(255, 255, 255);
+    text-shadow: rgb(32 32 32) 1px 1px;
+    font-weight: 700;
+    font-size: 32px;
+    margin: 16px 0;
+}
+
+.subtitle {
+    padding-left: 20px;
+    padding-right: 20px;
+    text-shadow: 1px 0 black;
+    font-weight: bold;
+}
+
+.benefit-title {
+    display: flex;
+    align-items: center;
+    font-weight: 900;
+    font-size: 20px;
+}
+
+@media only screen and (max-width: 480px) {
+    #phone-frame {
+      background-color: #fff;
+    }
+    #show-mobile-tip {
+       display: none;
+    }
+}
+
+@media only screen and (min-width: 481px) {
+    #app-frame {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+    }
+    #phone-frame {
+      border: 3px solid #3f94ef;
+      border-radius: 12px;
+      background-color: #fff;
+      width: 420px;
+      height: 800px;
+      overflow: scroll;
+      overflow-x: hidden;
+      overflow-y: overlay;
+    }
+    .scroll::-webkit-scrollbar {width: 6px; height: 0;}
+    .scroll::-webkit-scrollbar-track {margin: 6px 2px 6px;}
+    .scroll::-webkit-scrollbar-thumb {
+        background: rgba(0,0,0,0.0);
+        border-radius: 10px;
+        box-shadow: rgba(255,255,255,0.3) 0 0 0 1px;
+    }
+    .scroll:hover::-webkit-scrollbar-thumb {background: rgba(0,0,0,0.45)}
+    .scroll::-webkit-scrollbar-thumb:hover {background: rgba(0,0,0,0.55)}
+
+
+    /*
+    @media screen and (max-width: 480px) {
+        div.master { width: auto; min-width: 200px; padding-right: 4px;}
+        div.scroll {right: 3px;}
+        div.scroll::-webkit-scrollbar {width: 5px;}
+    }
+    */
+}
+
+
+input[type="file"]::file-selector-button {
+  border: 2px solid #6c5ce7;
+  padding: 0.2em 0.4em;
+  border-radius: 0.2em;
+  background-color: #a29bfe;
+  transition: 1s;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background-color: #81ecec;
+  border: 2px solid #00cec9;
+}
+
+/*
+@font-face {
+    font-named-instance: Regular;
+    font-display: swap;
+    font-family: Inter;
+    font-style: normal;
+    font-weight: 100 900;
+    src: url('./Inter-roman.var.woff2') format("woff2")
+}
+*/
+
+/*
+body {
+  background-image: linear-gradient(123deg, #ffffff 0%, #00b2ff 100%),
+    linear-gradient(236deg, #baff99 0%, #005e64 100%),
+    linear-gradient(180deg, #ffffff 0%, #002a5a 100%),
+    linear-gradient(
+      225deg,
+      #0094ff 20%,
+      #bff4ed 45%,
+      #280f34 45%,
+      #280f34 70%,
+      #ff004e 70%,
+      #e41655 85%,
+      #b30753 85%,
+      #b30753 100%
+    ),
+    linear-gradient(
+      135deg,
+      #0e0220 15%,
+      #0e0220 35%,
+      #e40475 35%,
+      #e40475 60%,
+      #48e0e4 60%,
+      #48e0e4 68%,
+      #d7fbf6 68%,
+      #d7fbf6 100%
+    );
+  background-blend-mode: overlay, overlay, overlay, darken, normal;
+  color: #fff;
+  font-family: system-ui, Helvetica, Arial, sans-serif;
+}
+*/
+
