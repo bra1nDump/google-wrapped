@@ -3,6 +3,7 @@ import useImage from "use-image";
 import { createRoot } from "react-dom/client";
 import React, { useEffect } from "react";
 import { useState } from "react";
+import * as _ from "lodash";
 
 export type Filter =
   | "TwoTruthsOneLieMeme"
@@ -38,6 +39,11 @@ export const sampleBlueBookKirill: Editor = {
   ],
 };
 
+export const emptyBlueBookEditor: Editor = {
+  filter: "BlueBookWTFMeme",
+  slots: ["", "", "", ""],
+};
+
 // the first very simple and recommended way:
 export function ViewMemeTemplate(props: {
   editor: Editor;
@@ -54,7 +60,8 @@ export function ViewMemeTemplate(props: {
   //
   // I did not want to compare aspect ratios, because it's really hard to visualize for me
   // Maybe there is a more elegant way to do this ...
-  const { innerWidth: availableWidth, innerHeight: availableHeight } = window;
+  let { innerWidth: availableWidth, innerHeight: availableHeight } = window;
+  availableHeight *= 0.85;
   const fractionOfAvailableWidth = image.naturalWidth / availableWidth;
   const fractionOfAvailableHeight = image.naturalHeight / availableHeight;
   const imageAspectRatio = image.naturalWidth / image.naturalHeight;
@@ -93,6 +100,12 @@ export function ViewMemeTemplate(props: {
           width={0.2 * actualImageWidth}
           fontSize={fontSize}
           rotation={-4}
+          onClick={() => {
+            props.pickerForSlot(0);
+          }}
+          onTap={() => {
+            props.pickerForSlot(0);
+          }}
         ></Text>
         <Text
           text={`1. ${slots[1]}`}
@@ -104,6 +117,9 @@ export function ViewMemeTemplate(props: {
           onClick={() => {
             props.pickerForSlot(1);
           }}
+          onTap={() => {
+            props.pickerForSlot(1);
+          }}
         ></Text>
         <Text
           text={`2. ${slots[2]}`}
@@ -112,6 +128,12 @@ export function ViewMemeTemplate(props: {
           width={0.3 * actualImageWidth}
           fontSize={fontSize}
           rotation={10}
+          onClick={() => {
+            props.pickerForSlot(2);
+          }}
+          onTap={() => {
+            props.pickerForSlot(2);
+          }}
         ></Text>
         <Text
           text={`3. ${slots[3]}`}
@@ -120,6 +142,12 @@ export function ViewMemeTemplate(props: {
           width={0.3 * actualImageWidth}
           fontSize={fontSize}
           rotation={10}
+          onClick={() => {
+            props.pickerForSlot(3);
+          }}
+          onTap={() => {
+            props.pickerForSlot(3);
+          }}
         ></Text>
       </Layer>
     </Stage>

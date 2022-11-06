@@ -11,6 +11,7 @@ import {
   type Editor,
   type Filter,
   sampleBlueBookKirill,
+  emptyBlueBookEditor,
 } from "./MemeTemplate";
 import { createRoot } from "react-dom/client";
 import { ZipUpload } from "./ZipUpload";
@@ -22,7 +23,6 @@ import { Bag, downloadBags, findInteresting, Search } from "./BaggyWords";
 function main(): Program<Model, Msg> {
   const rootContainer = document.getElementById("app")!;
   return start({
-    //init: initTestStories,
     init: init,
     view: App,
     update: update,
@@ -75,7 +75,7 @@ function initTestStories(): [Model, Array<Cmd<Msg>>] {
       route: { ctor: "Stories" },
       bags: [],
       searches: ["lol", "lil"],
-      editors: [sampleBlueBookKirill, { ...sampleBlueBookKirill }],
+      editors: [emptyBlueBookEditor],
       activeEditor: 0,
     },
     [
@@ -199,9 +199,7 @@ function ViewIntroduction() {
   return (
     <div>
       <div id="about">
-        <h2 id="title">
-          Analyze your Google search history
-        </h2>
+        <h2 id="title">Analyze your Google search history</h2>
         <div className="subtitle">
           <div className="benefit-title">
             <svg
@@ -209,19 +207,25 @@ function ViewIntroduction() {
               width="24"
               height="24"
               viewBox="0 0 16 16"
-              style={{ fill: "#fff", paddingRight: "8px", }}
+              style={{ fill: "#fff", paddingRight: "8px" }}
             >
-              <path fill="context-fill" d="M12.408 11.992c-1.663 0-2.813-2-4.408-2s-2.844 2-4.408 2C1.54 11.992.025 10.048 0 6.719c-.015-2.068.6-2.727 3.265-2.727S6.709 5.082 8 5.082s2.071-1.091 4.735-1.091 3.28.66 3.265 2.727c-.025 3.33-1.54 5.274-3.592 5.274zM4.572 6.537c-1.619.07-2.286 1.035-2.286 1.273s1.073.909 2.122.909 2.286-.384 2.286-.727a1.9 1.9 0 0 0-2.122-1.455zm6.857 0a1.9 1.9 0 0 0-2.123 1.455c0 .343 1.236.727 2.286.727s2.122-.671 2.122-.909-.667-1.203-2.286-1.273z"></path>
+              <path
+                fill="context-fill"
+                d="M12.408 11.992c-1.663 0-2.813-2-4.408-2s-2.844 2-4.408 2C1.54 11.992.025 10.048 0 6.719c-.015-2.068.6-2.727 3.265-2.727S6.709 5.082 8 5.082s2.071-1.091 4.735-1.091 3.28.66 3.265 2.727c-.025 3.33-1.54 5.274-3.592 5.274zM4.572 6.537c-1.619.07-2.286 1.035-2.286 1.273s1.073.909 2.122.909 2.286-.384 2.286-.727a1.9 1.9 0 0 0-2.122-1.455zm6.857 0a1.9 1.9 0 0 0-2.123 1.455c0 .343 1.236.727 2.286.727s2.122-.671 2.122-.909-.667-1.203-2.286-1.273z"
+              ></path>
             </svg>
             Privacy
           </div>
           <span>
-          The analysis does all the work locally on your device! Works in airplane mode! No data leaves your computer over the network.
+            The analysis does all the work locally on your device! Works in
+            airplane mode! No data leaves your computer over the network.
           </span>
         </div>
       </div>
-      <section style={{padding: "0 12px"}}>
-        <h2 id="show-mobile-tip">Pro tip 🐻: can be done entirely from mobile!</h2>
+      <section style={{ padding: "0 12px" }}>
+        <h2 id="show-mobile-tip">
+          Pro tip 🐻: can be done entirely from mobile!
+        </h2>
         <ul
           style={{
             textAlign: "left",
@@ -315,7 +319,9 @@ function App(model: Model) {
   }
   return (
     <div id="app-frame">
-      <div id="phone-frame" className="scroll">{Router(model)}</div>
+      <div id="phone-frame" className="scroll">
+        {Router(model)}
+      </div>
     </div>
   );
 }
@@ -325,6 +331,22 @@ function StoriesEditor(props: {
   activeEditor: number;
   searches: Search[];
 }) {
+  return (
+    <div>
+      <h4 style={{}}>
+        The template was initialized with some of your searches. Click text to
+        change
+      </h4>
+      <ViewMemeTemplate
+        editor={props.editors[0]}
+        pickerForSlot={(slot: number) => {
+          applyMsg({ ctor: "OpenPicker", holeIndex: slot });
+        }}
+        searches={props.searches}
+      />
+    </div>
+  );
+  // TODO: Fix layout for Swiper, we only have one meme working so fuck it
   return (
     <div
       style={{
@@ -420,8 +442,15 @@ function update(msg: Msg, model: Model): [Model, Array<Cmd<Msg>>] {
       const interestingSearchesFlat = interestingSearches.flatMap(
         ([_, searches]) => searches
       );
+
+      // TODO: expecting 4 slots and single editor
+      const slots = _.shuffle(interestingSearchesFlat).slice(0, 4);
+
       return [
-        _.assign(model, { searches: interestingSearchesFlat }),
+        _.assign(model, {
+          searches: interestingSearchesFlat,
+          editors: [{ filter: "BlueBookWTFMeme", slots }],
+        } as Model),
         [cmdOf(ChangeScreen({ ctor: "Stories" }))],
       ];
     case "UpdateActiveEditor":
