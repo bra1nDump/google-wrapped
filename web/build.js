@@ -10,12 +10,20 @@ esbuild.build({
   // minify: true,
   sourcemap: true,
   watch: true,
-  external: ['*.woff2'],
+  external: ['*.woff2', 'oval-background.png?v=1'],
 
   plugins: [
     // Will not reload - does not respect watch option
     copyStaticFiles({
       src: "src/static",
+      dest: "public",
+      dereference: true,
+      errorOnExist: false,
+      preserveTimestamps: true,
+      recursive: true,
+    }),
+    copyStaticFiles({
+      src: "assets",
       dest: "public",
       dereference: true,
       errorOnExist: false,
