@@ -110,47 +110,67 @@ type Route =
 
 // VIEW
 
-function ViewStep(props:any) {
-    const [done, setDone] = useState(false);
-    let icon;
-    let backgroundColor;
-    let border;
-    if (done) {
-      backgroundColor = "#d8ffe4";
-      border = "2px solid #10b981";
+function ViewStep(props: any) {
+  const [done, setDone] = useState(false);
+  let icon;
+  let backgroundColor;
+  let border;
+  if (done) {
+    backgroundColor = "#d8ffe4";
+    border = "2px solid #10b981";
 
-      icon = (
-        <svg style={{flex: "0 0 auto", marginRight: "8px"}} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M7.25 12.25L10.25 15.25L16.75 8.75" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="12" cy="12" r="10.25" stroke="black" stroke-width="1.5"/>
-        </svg>
-      );
-    } else {
-      backgroundColor = "";
-      border = "2px solid #e5e5e5";
+    icon = (
+      <svg
+        style={{ flex: "0 0 auto", marginRight: "8px" }}
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M7.25 12.25L10.25 15.25L16.75 8.75"
+          stroke="black"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <circle cx="12" cy="12" r="10.25" stroke="black" stroke-width="1.5" />
+      </svg>
+    );
+  } else {
+    backgroundColor = "";
+    border = "2px solid #e5e5e5";
 
-      icon = (
-        <svg style={{flex: "0 0 auto", marginRight: "8px"}} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="12" r="10.25" stroke="black" stroke-width="1.5"/>
-        </svg>
-      );
-
-    }
-    return (
-      <li style={{
+    icon = (
+      <svg
+        style={{ flex: "0 0 auto", marginRight: "8px" }}
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle cx="12" cy="12" r="10.25" stroke="black" stroke-width="1.5" />
+      </svg>
+    );
+  }
+  return (
+    <li
+      style={{
         display: "flex",
         padding: "12px",
         margin: "12px 0",
-        borderRadius: "6px", 
+        borderRadius: "6px",
         backgroundColor,
         border,
       }}
       onClick={() => setDone(!done)}
-      >
-        {icon}
-        {props.children}
-      </li>
-    );
+    >
+      {icon}
+      {props.children}
+    </li>
+  );
 }
 
 function ViewIntroduction() {
@@ -183,24 +203,24 @@ function ViewIntroduction() {
           overflowWrap: "break-word",
           listStyle: "none",
           padding: "0",
-      }}
+        }}
       >
         {...takeOutSteps.map((x) => {
-          return (<ViewStep>{x}</ViewStep>);
+          return <ViewStep>{x}</ViewStep>;
         })}
       </ul>
       <ZipUpload
         nextStage={(searches: string[]) => {
           applyMsg({ ctor: "UpdateSearches", searches });
         }}
-      />,
+      />
+      ,
       <div>
         Get your search statistics and make means with your search queries"
       </div>
     </div>
   );
 }
-
 
 //<button onClick={function() {
 //    applyMsg(ChangeScreen(SelectFilter()))
@@ -237,7 +257,11 @@ function App(model: Model) {
         return ViewIntroduction();
       case "Stories":
         return (
-          <StoriesEditor editors={model.editors} searches={model.searches} />
+          <StoriesEditor
+            editors={model.editors}
+            activeEditor={model.activeEditor}
+            searches={model.searches}
+          />
         );
       case "SearchPicker":
         const slotIndex = model.route.slotIndex;
@@ -257,15 +281,16 @@ function App(model: Model) {
   }
   return (
     <div id="app-frame">
-       <div id="phone-frame">
-        {Router(model)}
-      </div>
+      <div id="phone-frame">{Router(model)}</div>
     </div>
   );
-
 }
 
-function StoriesEditor(props: { editors: Editor[]; searches: Search[] }) {
+function StoriesEditor(props: {
+  editors: Editor[];
+  activeEditor: number;
+  searches: Search[];
+}) {
   return (
     <div
       style={{
@@ -277,21 +302,26 @@ function StoriesEditor(props: { editors: Editor[]; searches: Search[] }) {
     >
       <Swiper
         effect={"coverflow"}
-        modules={[Navigation, Pagination, Scrollbar, A11y]}
+        modules={[Navigation, Pagination, Scrollbar]}
         //onSwiper={(s) => (window.swiper = s)}
         slidesPerView={1}
         //spaceBetween={50}
         //navigation
         loop
+        allowTouchMove={false}
         touchStartPreventDefault={false}
         style={{ width: "100%", height: "100%" }}
         //scrollbar={{ draggable: true }}
         //pagination={{ clickable: true }}
-        onActiveIndexChange={(e) => console.log(e.activeIndex)}
+        initialSlide={props.activeEditor}
+        onRealIndexChange={(e) => {
+          applyMsg({ ctor: "UpdateActiveEditor", activeEditor: e.realIndex });
+        }}
       >
-        {...props.editors.map((editor) => {
+        {...props.editors.map((editor, index) => {
           return (
             <SwiperSlide style={{ backgroundColor: "lightgrey" }}>
+              <button onClick={(e) => console.log("aaaa")}>Click m!</button>
               <ViewMemeTemplate
                 editor={editor}
                 pickerForSlot={(slot: number) => {
@@ -307,49 +337,13 @@ function StoriesEditor(props: { editors: Editor[]; searches: Search[] }) {
   );
 }
 
-function viewMemePicker() {
-  return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateRows: "100px 1fr min-content",
-        height: "100%",
-        width: "420px",
-      }}
-    >
-      <Swiper
-        effect={"coverflow"}
-        modules={[Navigation, Pagination, Scrollbar, A11y]}
-        //onSwiper={(s) => (window.swiper = s)}
-        slidesPerView={1}
-        //spaceBetween={50}
-        //navigation
-        style={{ width: "100%" }}
-        //scrollbar={{ draggable: true }}
-        //pagination={{ clickable: true }}
-        onActiveIndexChange={(e) => console.log(e.activeIndex)}
-      >
-        <SwiperSlide style={{ backgroundColor: "lightgrey" }}>Meme</SwiperSlide>
-        <SwiperSlide style={{ backgroundColor: "lightgreen" }}>
-          Picker
-        </SwiperSlide>
-        <SwiperSlide style={{ backgroundColor: "lightpink" }}>
-          Rejects
-        </SwiperSlide>
-      </Swiper>
-      <div style={{ backgroundColor: "blue", paddingBottom: "1em" }}>
-        <button>Select Filter</button>
-      </div>
-    </div>
-  );
-}
-
 // UPDATE
 
 type Msg =
   | ChangeScreen
   | { ctor: "UpdateBags"; bags: Bag[] }
   | { ctor: "UpdateSearches"; searches: string[] }
+  | { ctor: "UpdateActiveEditor"; activeEditor: number }
   | { ctor: "OpenPicker"; holeIndex: number }
   | { ctor: "UpdateHole"; holeIndex: number; text: string };
 
@@ -396,6 +390,8 @@ function update(msg: Msg, model: Model): [Model, Array<Cmd<Msg>>] {
         _.assign(model, { searches: interestingSearchesFlat }),
         [cmdOf(ChangeScreen({ ctor: "Stories" }))],
       ];
+    case "UpdateActiveEditor":
+      return [_.assign(model, { activeEditor: msg.activeEditor }), []];
     case "OpenPicker":
       newModel = Object.assign({}, model, {
         route: { ctor: "SearchPicker", slotIndex: msg.holeIndex } as Route,
