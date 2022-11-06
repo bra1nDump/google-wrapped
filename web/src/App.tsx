@@ -7,6 +7,7 @@ import "./static/reset.css";
 import { start, Program, Cmd, Sub } from "./platform";
 import { ViewMemeTemplate } from "./MemeTemplate";
 import { createRoot } from "react-dom/client";
+import { ZipUpload } from "./ZipUpload";
 
 //  MAIN
 
@@ -34,7 +35,7 @@ type Model = { route: Route };
 
 function init(): [Model, Array<Cmd<Msg>>] {
   return [{ route: Introduction() }, []];
-  return [{ route: MemeTemplate(BlueBookWTFMeme()) }, []];
+  // return [{ route: MemeTemplate(BlueBookWTFMeme()) }, []];
 }
 
 type Route = Introduction | SelectFilter | MemeTemplate;
@@ -48,7 +49,7 @@ function SelectFilter(): Route {
   return { ctor: "SelectFilter", centerStage: { ctor: "TwoTruthsOneLieMeme" } };
 }
 type MemeTemplate = { ctor: "MemeTemplate"; meme: Filter };
-function MemeTemplate(meme: Filter): Route {
+function MemeTemplate(searches: string[], meme: Filter): Route {
   return { ctor: "MemeTemplate", meme };
 }
 
@@ -132,27 +133,12 @@ function ViewIntroduction() {
     "Download your Takeout folder 📁",
     "Return to the website ENABLE AIRPLANE MODE and upload .zip",
 
-    <div
-      style={{
-        padding: "12px",
-        backgroundColor: "#eee",
-        borderRadius: "12px",
+    // that I have missed this trick so much
+    <ZipUpload
+      nextStage={(searches: string[]) => {
+        applyMsg(ChangeScreen(MemeTemplate(searches, BlueBookWTFMeme())));
       }}
-    >
-      <input
-        name="file"
-        type="file"
-        style={{
-          padding: "1%",
-          backgroundColor: "#eee",
-          border: "2px solid #ccc",
-          borderRadius: "8px",
-          borderStyle: "dashed",
-          color: "#000",
-          fontWeight: "700",
-        }}
-      />
-    </div>,
+    />,
     "Get your search statistics and make means with your search queries",
   ];
 
@@ -167,20 +153,6 @@ function ViewIntroduction() {
       >
         {...takeOutSteps.map((x) => <li>{x}</li>)}
       </ul>
-      <button
-        onClick={function () {
-          applyMsg(ChangeScreen(SelectFilter()));
-        }}
-      >
-        Go to picker
-      </button>
-      <button
-        onClick={function () {
-          applyMsg(ChangeScreen(MemeTemplate(BlueBookWTFMeme())));
-        }}
-      >
-        Open Meme template for BlueBookWTFMeme
-      </button>
     </div>
   );
 }
