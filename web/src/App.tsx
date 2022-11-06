@@ -186,13 +186,13 @@ function ViewIntroduction() {
         Google Takeout 🥡
       </a>
     </span>,
-    'Click "Deselect all"',
-    'Find and set a checkmark under "My Activity" 🏄',
+    'Click "Create new export" then "Deselect all"',
+    'Select "My Activity" 🏄, right after Google Maps',
+    'Click "Multiple formats" and change "HTML" to "JSON" in a drop down',
     'Click "Next step" on the bottom',
-    'Keep the fields in the next step as is and click "Create export"',
+    'Click "Create export"',
     "Wait for the email from google (2 minutes) 📥",
-    "Click the link from the email, it will open in google drive 🔗",
-    "Download your Takeout folder 📁",
+    "Click the link from the email 🔗 and download the file",
     "Return to the website ENABLE AIRPLANE MODE and upload .zip",
   ];
 
@@ -217,8 +217,9 @@ function ViewIntroduction() {
             Privacy
           </div>
           <span>
-            The analysis does all the work locally on your device! Works in
-            airplane mode! No data leaves your computer over the network.
+            The analysis does all the work locally on your device!{" "}
+            <b>Works in airplane mode!</b> No data leaves your device over the
+            network.
           </span>
         </div>
       </div>

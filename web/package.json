@@ -26,6 +26,6 @@
     "use-image": "^1.1.0"
   },
   "scripts": {
-    "start": "node build.js & npx http-server -p 8000 -c-1 public & npx lt -p 8000 -s wrapped"
+    "start": "node build.js & npx http-server -p 8000 -c-1 public"
   }
 }
