@@ -17,6 +17,7 @@ import { createRoot } from "react-dom/client";
 import { ZipUpload } from "./ZipUpload";
 import _ from "lodash";
 import { Bag, downloadBags, findInteresting, Search } from "./BaggyWords";
+import useImage from "use-image";
 
 //  MAIN
 
@@ -44,6 +45,7 @@ type Model = {
   route: Route;
   bags: Bag[];
   searches: Array<string>;
+  image: HTMLImageElement | undefined;
   editors: Array<Editor>;
   activeEditor: number;
 };
@@ -75,6 +77,7 @@ function initTestStories(): [Model, Array<Cmd<Msg>>] {
       route: { ctor: "Stories" },
       bags: [],
       searches: ["lol", "lil"],
+      image: undefined,
       editors: [emptyBlueBookEditor],
       activeEditor: 0,
     },
@@ -93,6 +96,7 @@ function init(): [Model, Array<Cmd<Msg>>] {
       route: { ctor: "Introduction" },
       bags: [],
       searches: [],
+      image: undefined,
       editors: [sampleBlueBookKirill],
       activeEditor: 0,
     },
@@ -290,6 +294,10 @@ function ViewSearchPicker(props: {
 function App(model: Model) {
   console.log("got model", model);
 
+  const [image] = useImage(
+    "https://cdn.ebaumsworld.com/mediaFiles/picture/718392/85780339.jpg"
+  );
+
   function Router(model: Model) {
     switch (model.route.ctor) {
       case "Introduction":
@@ -297,6 +305,7 @@ function App(model: Model) {
       case "Stories":
         return (
           <StoriesEditor
+            image={image!}
             editors={model.editors}
             activeEditor={model.activeEditor}
             searches={model.searches}
@@ -329,6 +338,7 @@ function App(model: Model) {
 
 function StoriesEditor(props: {
   editors: Editor[];
+  image: HTMLImageElement;
   activeEditor: number;
   searches: Search[];
 }) {
@@ -339,6 +349,7 @@ function StoriesEditor(props: {
         change
       </h4>
       <ViewMemeTemplate
+        image={props.image}
         editor={props.editors[0]}
         pickerForSlot={(slot: number) => {
           applyMsg({ ctor: "OpenPicker", holeIndex: slot });

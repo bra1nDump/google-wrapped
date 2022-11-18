@@ -46,15 +46,13 @@ export const emptyBlueBookEditor: Editor = {
 
 // the first very simple and recommended way:
 export function ViewMemeTemplate(props: {
+  image: HTMLImageElement;
   editor: Editor;
   searches: string[];
   pickerForSlot: (_: number) => void;
 }) {
   const { filter, slots } = props.editor;
-  const [image] = useImage(memeUrl(filter));
-  if (!image) {
-    return <div></div>;
-  }
+  const image = props.image;
 
   // TODO: need to be aware of resizes
   //
