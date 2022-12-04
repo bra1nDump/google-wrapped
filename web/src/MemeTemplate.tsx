@@ -4,6 +4,8 @@ import { createRoot } from "react-dom/client";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import * as _ from "lodash";
+import { Search } from "./helpers";
+import { SearchInsights } from "./BaggyWords";
 
 export type Filter =
   | "TwoTruthsOneLieMeme"
@@ -48,7 +50,7 @@ export const emptyBlueBookEditor: Editor = {
 export function ViewMemeTemplate(props: {
   image: HTMLImageElement;
   editor: Editor;
-  searches: string[];
+  searchInsights: SearchInsights;
   pickerForSlot: (_: number) => void;
 }) {
   const { filter, slots } = props.editor;

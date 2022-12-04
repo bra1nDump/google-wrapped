@@ -1,9 +1,11 @@
-import { getSearches } from "./helpers";
+import { ActivityEntry, parseActivity } from "./helpers";
 import { useRef } from "react";
 import { ZipReader, BlobReader, TextWriter } from "@zip.js/zip.js";
 import React from "react";
 
-export function ZipUpload(props: { nextStage: (searches: string[]) => void }) {
+export function ZipUpload(props: {
+  nextStage: (searches: ActivityEntry[]) => void;
+}) {
   const fileInput = useRef<HTMLInputElement>(null);
 
   return (
@@ -50,7 +52,7 @@ export function ZipUpload(props: { nextStage: (searches: string[]) => void }) {
 
           const searchEntryData = await searchEntry.getData(new TextWriter());
           const json = JSON.parse(searchEntryData);
-          const searches = getSearches(json);
+          const searches = parseActivity(json);
 
           // TODO: Remove in prod, logging
           searches.slice(0, 10).map(console.log);

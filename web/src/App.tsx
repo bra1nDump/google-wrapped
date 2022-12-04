@@ -16,8 +16,9 @@ import {
 import { createRoot } from "react-dom/client";
 import { ZipUpload } from "./ZipUpload";
 import _ from "lodash";
-import { Bag, downloadBags, findInteresting, Search } from "./BaggyWords";
+import { Bag, downloadBags, getInsights, SearchInsights } from "./BaggyWords";
 import useImage from "use-image";
+import { ActivityEntry, getSearches, Search } from "./helpers";
 
 //  MAIN
 
@@ -44,7 +45,7 @@ let { applyMsg } = main();
 type Model = {
   route: Route;
   bags: Bag[];
-  searches: Array<string>;
+  searchInsights: SearchInsights | undefined;
   image: HTMLImageElement | undefined;
   editors: Array<Editor>;
   activeEditor: number;
@@ -71,12 +72,35 @@ const kirillSampleSearches = [
   "how to remove all bots from instagram",
 ];
 
+// Debugging. Shortcut to bluebook editor
 function initTestStories(): [Model, Array<Cmd<Msg>>] {
+  const exampleSearches: Search[] = [
+    {
+      kind: "Search",
+      date: new Date(),
+      query: "lol",
+    },
+    {
+      kind: "Search",
+      date: new Date(),
+      query: "lil",
+    },
+  ];
   return [
     {
       route: { ctor: "Stories" },
       bags: [],
-      searches: ["lol", "lil"],
+      searchInsights: {
+        firstSearchDate: new Date(),
+        totalSearches: 2,
+        totalWebsiteVisits: 10,
+        themes: [
+          {
+            name: "Political",
+            searches: exampleSearches,
+          },
+        ],
+      },
       image: undefined,
       editors: [emptyBlueBookEditor],
       activeEditor: 0,
@@ -95,7 +119,7 @@ function init(): [Model, Array<Cmd<Msg>>] {
     {
       route: { ctor: "Introduction" },
       bags: [],
-      searches: [],
+      searchInsights: undefined,
       image: undefined,
       editors: [sampleBlueBookKirill],
       activeEditor: 0,
@@ -244,8 +268,11 @@ function ViewIntroduction() {
           })}
         </ul>
         <ZipUpload
-          nextStage={(searches: string[]) => {
-            applyMsg({ ctor: "UpdateSearches", searches });
+          nextStage={(activityEntries: ActivityEntry[]) => {
+            applyMsg({
+              ctor: "UpdateActivityEntries",
+              activityEntries,
+            });
           }}
         />
         <div
@@ -270,24 +297,32 @@ function ViewIntroduction() {
 //} }>
 
 function ViewSearchPicker(props: {
-  onPick: (search: string) => void;
-  searches: string[];
+  onPick: (search: Search) => void;
+  searchInsights: SearchInsights;
 }) {
   return (
-    <ul>
-      {...props.searches.map((search) => {
-        const truncatedSearch = search.slice(0, 30);
+    <>
+      {...props.searchInsights.themes.map((theme) => {
         return (
-          <li
-            onClick={() => {
-              props.onPick(search);
-            }}
-          >
-            {truncatedSearch}
-          </li>
+          <>
+            <h1>{theme.name}</h1>
+            <ul>
+              {...theme.searches.map((search) => {
+                return (
+                  <li
+                    onClick={() => {
+                      props.onPick(search);
+                    }}
+                  >
+                    {search.query}
+                  </li>
+                );
+              })}
+            </ul>
+          </>
         );
       })}
-    </ul>
+    </>
   );
 }
 
@@ -308,21 +343,21 @@ function App(model: Model) {
             image={image!}
             editors={model.editors}
             activeEditor={model.activeEditor}
-            searches={model.searches}
+            searchInsights={model.searchInsights!}
           />
         );
       case "SearchPicker":
         const slotIndex = model.route.slotIndex;
         return (
           <ViewSearchPicker
-            onPick={(search: string) => {
+            onPick={(search: Search) => {
               applyMsg({
                 ctor: "UpdateHole",
                 holeIndex: slotIndex,
-                text: search,
+                search,
               });
             }}
-            searches={model.searches}
+            searchInsights={model.searchInsights!}
           />
         );
     }
@@ -340,7 +375,7 @@ function StoriesEditor(props: {
   editors: Editor[];
   image: HTMLImageElement;
   activeEditor: number;
-  searches: Search[];
+  searchInsights: SearchInsights;
 }) {
   return (
     <div>
@@ -354,7 +389,7 @@ function StoriesEditor(props: {
         pickerForSlot={(slot: number) => {
           applyMsg({ ctor: "OpenPicker", holeIndex: slot });
         }}
-        searches={props.searches}
+        searchInsights={props.searchInsights}
       />
     </div>
   );
@@ -390,13 +425,13 @@ function StoriesEditor(props: {
           return (
             <SwiperSlide style={{ backgroundColor: "lightgrey" }}>
               <button onClick={(e) => console.log("aaaa")}>Click m!</button>
-              <ViewMemeTemplate
+              {/* <ViewMemeTemplate
                 editor={editor}
                 pickerForSlot={(slot: number) => {
                   applyMsg({ ctor: "OpenPicker", holeIndex: slot });
                 }}
                 searches={props.searches}
-              />
+              /> */}
             </SwiperSlide>
           );
         })}
@@ -410,10 +445,10 @@ function StoriesEditor(props: {
 type Msg =
   | ChangeScreen
   | { ctor: "UpdateBags"; bags: Bag[] }
-  | { ctor: "UpdateSearches"; searches: string[] }
+  | { ctor: "UpdateActivityEntries"; activityEntries: ActivityEntry[] }
   | { ctor: "UpdateActiveEditor"; activeEditor: number }
   | { ctor: "OpenPicker"; holeIndex: number }
-  | { ctor: "UpdateHole"; holeIndex: number; text: string };
+  | { ctor: "UpdateHole"; holeIndex: number; search: Search };
 
 type ChangeScreen = { ctor: "ChangeScreen"; route: Route };
 function ChangeScreen(route: Route): Msg {
@@ -437,32 +472,43 @@ function update(msg: Msg, model: Model): [Model, Array<Cmd<Msg>>] {
       return [newModel, []];
     case "UpdateBags":
       return [_.assign(model, { bags: msg.bags }), []];
-    case "UpdateSearches":
-      const searchesOfAcceptableLength = msg.searches.filter(
-        (s) => s.length < 40
-      );
+    case "UpdateActivityEntries":
       // WARNING: This assumes we have fetched all bags
       if (!model.bags) {
         window.alert(
           "Language model did not have enough time to download from our servers"
         );
+        return [model, []];
       }
-      const interestingSearches = findInteresting(
+
+      // Key. Get search data insights
+      const { activityEntries } = msg;
+
+      const searches = getSearches(activityEntries);
+
+      const searchesOfAcceptableLength = searches.filter(
+        (s) => s.query.length < 40
+      );
+      const searchInsights = getInsights(
         searchesOfAcceptableLength,
         model.bags
       );
-      const interestingSearchesFlat = interestingSearches.flatMap(
-        ([_, searches]) => searches
+
+      // Just extracting a flat list for now, later on theme names will be passed on to the view lair
+      const interestingSearchesFlat = searchInsights.themes.flatMap(
+        ({ searches }) => searches
       );
 
       // TODO: expecting 4 slots and single editor
-      const slots = _.shuffle(interestingSearchesFlat).slice(0, 4);
+      const slots = _.shuffle(interestingSearchesFlat)
+        .slice(0, 4)
+        .map((search) => search.query);
 
       return [
         _.assign(model, {
-          searches: interestingSearchesFlat,
+          searchInsights,
           editors: [{ filter: "BlueBookWTFMeme", slots }],
-        } as Model),
+        }),
         [cmdOf(ChangeScreen({ ctor: "Stories" }))],
       ];
     case "UpdateActiveEditor":
@@ -473,10 +519,15 @@ function update(msg: Msg, model: Model): [Model, Array<Cmd<Msg>>] {
       });
       return [newModel, []];
     case "UpdateHole":
+      // Concise but type unsafe https://lodash.com/docs#update
       newModel = _.assign(model, {
         editors: arrayUpdate(model.activeEditor, model.editors, (editor) => {
           return _.assign(editor, {
-            slots: arrayUpdate(msg.holeIndex, editor.slots, (_) => msg.text),
+            slots: arrayUpdate(
+              msg.holeIndex,
+              editor.slots,
+              (_) => msg.search.query
+            ),
           });
         }),
       });

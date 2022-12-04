@@ -2,10 +2,28 @@ import { intersection, orderBy, sortBy, sortedIndexBy, zip } from "lodash";
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-import { getBagOfWords, getSearches } from "./helpers";
+import {
+  ActivityEntry,
+  getBagOfWords,
+  getSearches,
+  parseActivity,
+  Search,
+} from "./helpers";
 
-export type Search = string;
 export type Bag = [string, string[]];
+
+export type Theme = {
+  // For example "political" from a bag of words or "late" for searches outside your normal time
+  name: string;
+  searches: Search[];
+};
+
+export type SearchInsights = {
+  totalSearches: number;
+  totalWebsiteVisits: number;
+  firstSearchDate: Date;
+  themes: Theme[]; // Sorted by relevance, most relevant first
+};
 
 export async function downloadBags() {
   const bagTopics = ["illnesses", "political", "sexual"];
@@ -18,19 +36,25 @@ export async function downloadBags() {
  *
  * @param searches All searches for user
  * @param bags Pre fetched list of bags [topic, words associated with the topic]
- * @returns Similar to bags, [topic, user searches associated with the topic]
+ * @returns High level insights on your searches
  */
-export function findInteresting(
-  searches: Search[],
-  bags: Bag[]
-): [string, string[]][] {
-  return bags.map(([topic, bag]) => {
-    return [topic, topNInterestingSearches(bag, 100, searches)];
+export function getInsights(searches: Search[], bags: Bag[]): SearchInsights {
+  const searchesByTopic = bags.map(([topic, bag]) => {
+    return { name: topic, searches: searchesMatchingTopic(bag, searches) };
   });
+
+  return {
+    totalSearches: searches.length,
+    totalWebsiteVisits: 0,
+    firstSearchDate: new Date(),
+    themes: searchesByTopic,
+  };
 }
 
-export function BaggyWords(props: { searches: Search[] }) {
+export function BaggyWords(props: { searches: ActivityEntry[] }) {
   const [bags, setBags] = useState<Bag[]>();
+
+  const searches = getSearches(props.searches);
 
   useEffect(() => {
     async function run() {
@@ -41,7 +65,7 @@ export function BaggyWords(props: { searches: Search[] }) {
 
   return (
     <div>
-      {bags && bags.map((bag) => <Topic bag={bag} searches={props.searches} />)}
+      {bags && bags.map((bag) => <Topic bag={bag} searches={searches} />)}
     </div>
   );
 }
@@ -49,7 +73,7 @@ export function BaggyWords(props: { searches: Search[] }) {
 function Topic(props: { bag: Bag; searches: Search[] }) {
   const [topic, words] = props.bag;
 
-  const topSearches = topNInterestingSearches(words, 100, props.searches);
+  const topSearches = searchesMatchingTopic(words, props.searches);
 
   return (
     <div>
@@ -57,24 +81,29 @@ function Topic(props: { bag: Bag; searches: Search[] }) {
       <h2>Words:</h2>
       {...words.slice(0, 10).map((x) => <div>{x}</div>)}
       <h2>Searches:</h2>
-      {...topSearches.map((x) => <div>{x}</div>)}
+      {...topSearches.map((x) => <div>{x.query}</div>)}
     </div>
   );
 }
 
-function topNInterestingSearches(
-  interestingWords: string[],
-  n: number,
+/**
+ * Removes all searches that have no overlap with topic words.
+ * @param topicWords If any of these words are seen in a search it's considered as belonging to the topic
+ * @param searches Searches to try classifying
+ * @returns List of searches ordered by topic relevance, most relevant first
+ */
+function searchesMatchingTopic(
+  topicWords: string[],
   searches: Search[]
 ): Search[] {
   // [score, search][]
-  const scoredSearches: [number, string][] = searches.map((search) => {
-    const normalizedSearchWords = new String(search)
+  const scoredSearches: [number, Search][] = searches.map((search) => {
+    const normalizedSearchWords = new String(search.query)
       .toLowerCase()
       .replace(/[^0-9a-z ]/gi, "")
       .split(" ");
 
-    const overlap = intersection(interestingWords, normalizedSearchWords);
+    const overlap = intersection(topicWords, normalizedSearchWords);
     return [overlap.length, search];
   });
 
@@ -82,7 +111,7 @@ function topNInterestingSearches(
     scoredSearches,
     [([score, _]) => score],
     ["desc"]
-  ).slice(0, n);
+  ).filter(([score, _]) => score > 0);
 
   return searchesSorted.map(([_, search]) => search);
 }
@@ -92,5 +121,5 @@ const debugElement = document.getElementById("baggie");
 
 if (debugElement) {
   const root = createRoot(debugElement);
-  root.render(<BaggyWords searches={getSearches()} />);
+  root.render(<BaggyWords searches={parseActivity([])} />);
 }
