@@ -1,56 +1,10 @@
+# December 4, remembering code, extending search type, preparing to get more statistics out
+
+#wrapped/idea We're trying to make the book mean too complicated. We should start with setting the book title to "your searches". You of course can edit that
+
 # Berkley user testing
 
-- They wanted to read the user agreement.
-
-- Safari, searches in native search
-
-- Couple, declined
-
-- exported, bug, couple, only guy did it
-
-  - jasonyqz@berkley.edu
-
-- exported, bug
-
-  - cameronvdang@berkeley.edu
-
-- exported, took 5+ minutes, got help from us
-
-  - laughed at the meme
-  - graduated
-  - seems fun
-
-- sinjsant@gmail.com
-
-Jason
-
-- jasonduong@berkley.edu
-- Pretty cool concept
-- sketch
-
-Couple of people 2 girls
-
-- Scary?
-- Is this anonymous?
-
-People are actually doing it
-
-- alenachao2@gmail.com
-
-2 people are engaged, looking through the instuctions
-multiple people working on it
-
-Will try again, didn't even do airplane mode
-
-- eleonorejune@gmail.com
-- sofiacravero2@gmail.com
-
-kelyarch22@berk
-cjmc7e@berk
-
-- dominicd@berkley
-
-- ariellajn@berk
+In user interviews
 
 # Nov 5
 

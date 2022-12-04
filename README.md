@@ -1,25 +1,24 @@
-# Web server
-Start with 
+# Start web server
+
+```bash
+cd web
+npm install
+npm start
+```
+
+# Re-create datasets-client
+
+**Important** - run spark in Codespaces, not tested on macOS. Previously expereinced installation issues.
+
+Nesessary for the client to run on device inference. The datasets contain words for different classes, for example politics, sex and health.
+
+To get the bags of words for categories defined in spark_pipeline.py, run create_bags_of_words.ipynb, and split the output into separate files. It runs SparkNLP classifier on all english words from http://www.mieliestronk.com/wordlist.html and splits them into themes of interest.
+
+The classifier is reused from the previous server side classification that would run user's searches through it. Thus a lot of confusing naming.
+
+Place the files in datasets-client, format as bag\_<topic>.txt. These will be fetched from the client.
+
+# Web server (Spark setup, old, now processing on javascript side)
+
+Start with
 gunicorn --reload 'server:app'
-
-# jupyter setup
-Since I was not able to modify environment variables any other way, I'm starting to server myself. You can connect to it from the toggle on the vscode kernel selection menu. This is necessary to override java setup
-
-jupyter server --config jupyter_kernel.json
-
-Have attempted to teach a single classifier 
-(the same one that we did for work and fun)
-with multiple potential labels.
-Unfortunately the results are underwhelming.
-Seems to be a lot of misclassifications.
-
-I think we're also going to hit the issue of
-encoding properties of the search, instead of actual content.
-For example how can you consider one search dumb?
-I have asked if the earth is flat, 
-and now it deems all climate and ecological questions
-to be dumb.
-
-# Gotchas
-- To not shadow variable names!!!!!
-I have received cryptic type error messages in notebooks because I would try to apply the same transformation to the same variable twice, second time inevitably it be failing

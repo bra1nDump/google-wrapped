@@ -4,3 +4,6 @@ node_modules/
 .DS_Store
 
 web/public/
+
+# Kirill's terminal set up
+terminal-in-editor.md

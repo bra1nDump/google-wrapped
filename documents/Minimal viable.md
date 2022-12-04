@@ -13,13 +13,13 @@
 
 - landing with sales pitch with instructions
   - [optional] video
-- Examples, while you are waiting browse these examples
+- [optional] Examples, while you are waiting browse these examples
   - Tell them a story like pudding.com does
 - zip extraction (json)
   - 20% friction reduction - html
 - pool of 'potentially interesting' searches
   - [done] [political, sexual, medical] (simple word lists)
-    - [optional] [rare, buzz words]
+  - [optional] [rare, buzz words, celebreties]
 - templated editor for
   - Stats across recognized search groups (theme, time)
   - Search picker

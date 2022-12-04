@@ -4,6 +4,11 @@
 - Extract life phases. Trigger reflection and nostalgic.
 - Do not duplicate what can be found in Apple / Google photo summaries. We are uncovering what's bothering people REALLY.
 
+## To do
+
+- Add statistics per group, and overall
+- Ed celebrities, and their categories. We can query wikipedia https://www.mediawiki.org/wiki/Wikibase/API
+
 # Assumptions
 
 ~ 10k / year ~ 30 / day queries
@@ -12,7 +17,13 @@ Assuming filtering out work stuff leaves us with 20/80 gold/boring searches
 
 Developers have more google searches, total and specifically work related then the rest of the population.
 
-# Strategy
+# Strategy, on device bag of words
+
+More details [[google-wrapped/README]]
+
+Using old spark pipeline given multiple examples for the labels we want to classify, classify entire english dictionary. Used these files on the client for bag of word model.
+
+# Strategy (Old)
 
 Start with raw list of searches having basic information: query, time, location.
 Apply a cheap 'boring' filter.
@@ -20,11 +31,6 @@ We extract as many signals as we can.
 We put all this data into a table we can play around with manually, or write queries against using the signals. I imagine filters, group by's.
 
 We can use profiling signals to decide what kind of stories we want to generate. For example don't show food card to someone who barely searched for any food. When data is lacking tho we can present this as stats - "We notice you don't eat much compared to the rest of us, you must be air-fed, please share this secret"
-
-# Implementation
-
-Productionilizing could be done with this thing as an overkill: https://docs.vespa.ai/en/getting-started.html
-Seems like it would be good at combining different signals and running sub-models on data intelegently.
 
 # Clustering themes
 
