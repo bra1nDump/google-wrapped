@@ -36,16 +36,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          cache: 'npm'
-      - run: cd web
-      - run: npm install
-      - run: npm build
-      - run: cd ..
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
+      - run: cd web && npm install && npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          # Upload entire repository
-          path: 'web/public'
+          # Upload web/public
+          path: "web/public"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
