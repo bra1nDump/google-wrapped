@@ -206,7 +206,7 @@ function ViewStep(props: any) {
 function ViewIntroduction() {
   const takeOutSteps = [
     <span>
-      Go to
+      Go to<span> </span>
       <a
         href="https://takeout.google.com/settings/takeout/downloads"
         target="_blank"
@@ -219,7 +219,7 @@ function ViewIntroduction() {
     'Click "Multiple formats" and change "HTML" to "JSON" in a drop down',
     'Click "Next step" on the bottom',
     'Click "Create export"',
-    "Wait for the email from google (2 minutes) 📥",
+    "Wait for the email from google (3 minutes) 📥",
     "Click the link from the email 🔗 and download the file",
     "Return to the website ENABLE AIRPLANE MODE and upload .zip",
   ];
@@ -285,7 +285,7 @@ function ViewIntroduction() {
           }}
           //onClick={() => setDone(!done)}
         >
-          Get your search statistics and create memes with your search queries"
+          Get your search statistics and create memes with your search queries
         </div>
       </section>
     </div>

@@ -26,6 +26,7 @@
     "use-image": "^1.1.0"
   },
   "scripts": {
-    "start": "node build.js & npx http-server -p 8000 -c-1 public"
+    "build": "node build.js",
+    "watch": "node build.js --watch & npx http-server -p 8000 -c-1 public"
   }
 }

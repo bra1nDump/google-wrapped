@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "start",
+			"script": "watch",
 			"isBackground": true,
 			"path": "web",
 			"label": "build",
