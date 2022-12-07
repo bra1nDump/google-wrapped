@@ -1,5 +1,49 @@
 # Log
 
+# December 5, Elissa feedback, Phone
+
+56 - start
+
+A lot of text for her to read. Use more symbols and pictures. Make it one sentence. Maximum 2 short sentences.
+
+What is these dots - ah these are checkdots.
+
+Change of window is unfortunate. Took time to figure out
+
+Give hint that my activity is at the very bottom.
+
+10-20 seconds, she knew where to look tho. Without it would be even longer.
+Its in alphabetical order MM! Mention that too.
+
+For JSON - tell to click OK.
+
+Create export, wait for email from google. If you have email Apple Email or Gmail you should get a notification. (This part is intuitive).
+
+Its been over 3 minutes. Roughly 3 minutes. Need a timer how long its gonna take.
+
+Too long waiting. Maybe add a dino game.
+
+<iframe src="https://chromedino.com/" frameborder="0" scrolling="no" width="100%" height="100%" loading="lazy"></iframe>
+<style type="text/css">iframe { position: absolute; width: 100%; height: 100%; z-index: 999; }</style>
+
+Whats return to a website. She probably
+
+Can't go back to the meme itself from the picker when back clicking.
+
+Not intuitive, didn't understand you need to click stuff.
+
+So close together on this, hard to click on a certain one. On the meme template.
+
+Make it obvious its a button. Did not read the instructions.
+
+#wrapped/idea Re-googling old searches. Maybe use GPT instead? :D.
+
+No repeats in the list (show how many times did you search for it)
+
+Order is random, timline needed.
+
+So many, refresh button to not look at giant list. Oh, I like this combination, just go with this.
+
 # Berkeley user testing
 
 - They wanted to read the user agreement.
