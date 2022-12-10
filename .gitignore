@@ -7,3 +7,6 @@ web/public/
 
 # Kirill's terminal set up
 terminal-in-editor.md
+
+# Private test data
+SECRET-test-data/
