@@ -3,7 +3,7 @@
 ```bash
 cd web
 npm install
-npm start
+npm run watch
 ```
 
 # Re-create datasets-client

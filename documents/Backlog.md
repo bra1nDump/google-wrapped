@@ -32,6 +32,14 @@
     - Maybe some more modern show characters?
     - Let people fill in any text with what they want, not their searches. Less restrictive, easier to make funny
 
+# Next up
+
+- Extract stats
+- Display
+- May be optimized short circuiting too fetch data (store partial Jason off Kirill data)
+
+# Done
+
 # Memes
 
 - [Surprising search: Uncover ghost let me see whoe you really are](https://i.imgflip.com/4sz3mk.png?a462840)
