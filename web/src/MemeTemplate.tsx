@@ -8,6 +8,7 @@ import { Search } from "./helpers";
 import { SearchInsights } from "./BaggyWords";
 
 export type Filter =
+  | "SearchStatistics"
   | "TwoTruthsOneLieMeme"
   | "UncoverGhostMeme"
   | "TypesOfHeadacheMeme"
@@ -46,11 +47,38 @@ export const emptyBlueBookEditor: Editor = {
   slots: ["", "", "", ""],
 };
 
-// the first very simple and recommended way:
+function capitalize(str: string) {
+  return str[0].toUpperCase() + str.slice(1);
+}
+
+/**
+ * Display search insights.
+ * Allow the user to drop the insides they don't want to share.
+ */
+export function ViewSearchInsights(props: {
+  searchInsights: SearchInsights;
+  // modifyInsights: (_: SearchInsights) => void;
+}) {
+  const { totalSearches, totalWebsiteVisits, firstSearchDate, themes } =
+    props.searchInsights;
+  return (
+    <div>
+      <h1>Google searches: {totalSearches}</h1>
+      <h1>Website visits: {totalWebsiteVisits}</h1>
+      {...themes.map(({ name, searches }) => {
+        return (
+          <h2>
+            {capitalize(name)} searches: {searches.length}
+          </h2>
+        );
+      })}
+    </div>
+  );
+}
+
 export function ViewMemeTemplate(props: {
   image: HTMLImageElement;
   editor: Editor;
-  searchInsights: SearchInsights;
   pickerForSlot: (_: number) => void;
 }) {
   const { filter, slots } = props.editor;

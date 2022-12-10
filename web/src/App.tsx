@@ -12,6 +12,7 @@ import {
   type Filter,
   sampleBlueBookKirill,
   emptyBlueBookEditor,
+  ViewSearchInsights,
 } from "./MemeTemplate";
 import { createRoot } from "react-dom/client";
 import { ZipUpload } from "./ZipUpload";
@@ -377,6 +378,8 @@ function StoriesEditor(props: {
   activeEditor: number;
   searchInsights: SearchInsights;
 }) {
+  return <ViewSearchInsights searchInsights={props.searchInsights} />;
+
   return (
     <div>
       <h4 style={{}}>
@@ -389,10 +392,10 @@ function StoriesEditor(props: {
         pickerForSlot={(slot: number) => {
           applyMsg({ ctor: "OpenPicker", holeIndex: slot });
         }}
-        searchInsights={props.searchInsights}
       />
     </div>
   );
+
   // TODO: Fix layout for Swiper, we only have one meme working so fuck it
   return (
     <div

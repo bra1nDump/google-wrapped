@@ -6,6 +6,7 @@ import {
   ActivityEntry,
   getBagOfWords,
   getSearches,
+  getWebsiteVisits,
   parseActivity,
   Search,
 } from "./helpers";
@@ -38,14 +39,20 @@ export async function downloadBags() {
  * @param bags Pre fetched list of bags [topic, words associated with the topic]
  * @returns High level insights on your searches
  */
-export function getInsights(searches: Search[], bags: Bag[]): SearchInsights {
+export function getInsights(
+  activityEntries: ActivityEntry[],
+  bags: Bag[]
+): SearchInsights {
+  const searches = getSearches(activityEntries);
+  const websiteVisits = getWebsiteVisits(activityEntries);
+
   const searchesByTopic = bags.map(([topic, bag]) => {
     return { name: topic, searches: searchesMatchingTopic(bag, searches) };
   });
 
   return {
     totalSearches: searches.length,
-    totalWebsiteVisits: 0,
+    totalWebsiteVisits: websiteVisits.length,
     firstSearchDate: new Date(),
     themes: searchesByTopic,
   };

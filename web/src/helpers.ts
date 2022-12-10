@@ -67,6 +67,12 @@ export function getSearches(activityEntries: ActivityEntry[]) {
   return activityEntries.filter(({ kind }) => kind === "Search") as Search[];
 }
 
+export function getWebsiteVisits(activityEntries: ActivityEntry[]) {
+  return activityEntries.filter(
+    ({ kind }) => kind === "WebsiteVisit"
+  ) as WebsiteVisit[];
+}
+
 /**
  * Fetches origin/bag_<topic>.txt and parses by newline
  * @param topic
