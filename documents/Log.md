@@ -1,3 +1,23 @@
+# December 9
+
+Added a new ViewSearchInsights function. Currently displacing the editor. Will add swiper next.
+
+Think its a good idea to show a graph of how much you were searching for various topics. I have:
+
+Illness: 245
+Politics: 318
+Sexual: 511
+
+So roughly 100 per year of each. I think a graph will be a good interactive way to show this.
+
+Also add the dates! First search, last search, total searches, average searches per day, average searches per week, average searches per month, average searches per year.
+
+The stats screen can already show the graph below - it will just be scoped to total timeline first. The user can zoom in / out to get more granular.
+
+Good to show representative searches from peaks. Giving the timeline also will help contextualize the searches.
+
+Here would be a good spot to add the 'context' button to see searches / websites around that date.
+
 # December 4, remembering code, extending search type, preparing to get more statistics out
 
 #wrapped/idea We're trying to make the book mean too complicated. We should start with setting the book title to "your searches". You of course can edit that
